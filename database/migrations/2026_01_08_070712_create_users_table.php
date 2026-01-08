@@ -12,11 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
+            // id
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
+            // Data Akun
+            $table->string('username')->unique();
             $table->string('password');
+            // Data Profil
+            $table->string('name');
+            $table->string('nip')->unique()->nullable();
+            // Status
+            $table->boolean('is_active')->default(true); // Default aktif (1)
+            $table->foreignId('created_by')
+              ->nullable()
+              ->constrained('users') // FK ke tabelnya sendiri
+              ->nullOnDelete();
             $table->rememberToken();
             $table->timestamps();
         });
