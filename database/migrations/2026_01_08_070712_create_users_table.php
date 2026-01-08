@@ -24,9 +24,9 @@ return new class extends Migration
             // Status
             $table->boolean('is_active')->default(true); // Default aktif (1)
             $table->foreignId('created_by')
-              ->nullable()
-              ->constrained('users') // FK ke tabelnya sendiri
-              ->nullOnDelete();
+                ->nullable()
+                ->constrained('users') // FK ke tabelnya sendiri
+                ->nullOnDelete();
             $table->rememberToken();
             $table->timestamps();
         });
