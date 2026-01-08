@@ -14,7 +14,11 @@
         <div class="flex-none">
             <ul class="menu menu-horizontal px-1">
                 <li><a>Dashboard</a></li>
-                <li><a>Logout</a></li>
+                <li>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf  <button type="submit">Logout</button>
+                    </form>
+                </li>
             </ul>
         </div>
     </div>
