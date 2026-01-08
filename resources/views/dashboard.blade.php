@@ -8,7 +8,7 @@
         <div class="card w-96 bg-base-100 shadow-xl border border-gray-200" x-data="{ terbuka: false }">
             
             <div class="card-body">
-                <h2 class="card-title text-primary">Uji Coba Sistem</h2>
+                <h2 class="card-title text-primary">Halo, {{ Auth::user()->name }}!</h2>
                 <p>Klik tombol di bawah untuk mengetes Alpine.js</p>
                 
                 <div class="card-actions justify-end mt-4">

@@ -19,8 +19,12 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email',
+        'username',  
+        'nip',
+        'role_id',    // Kunci penghubung ke Role
         'password',
+        'is_active',
+        'created_by',
     ];
 
     /**
@@ -41,7 +45,6 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

@@ -14,7 +14,7 @@
         <div class="flex-none">
             <ul class="menu menu-horizontal px-1">
                 <li><a>Dashboard</a></li>
-                <li><a>Login</a></li>
+                <li><a>Logout</a></li>
             </ul>
         </div>
     </div>
@@ -25,7 +25,7 @@
 
     <footer class="footer footer-center p-4 bg-base-300 text-base-content">
         <aside>
-            <p>Copyright © 2026 - Biro Pengadaan Barang Jasa</p>
+            <p>Copyright © 2026 - Pokja 1 Developer Team</p>
         </aside>
     </footer>
 
