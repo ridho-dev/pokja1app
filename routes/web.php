@@ -23,3 +23,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
+
+// Halaman Logout
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
+});
