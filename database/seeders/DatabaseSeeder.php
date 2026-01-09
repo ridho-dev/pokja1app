@@ -38,23 +38,32 @@ class DatabaseSeeder extends Seeder
 
         User::create([
             'name' => 'System',
-            'username' => 'system',           // Username Login
-            'password' => Hash::make('system123'), // Password Login (Terenkripsi)
+            'username' => 'system',          
+            'password' => Hash::make('system123'),
             'nip' => '000000000000000000',
-            'role_id' => $roleAdmin->id,     // Sambungkan ke Role Admin
+            'role_id' => $roleAdmin->id, 
             'is_active' => true,
             'created_by' => null,
         ]);
 
-        // Opsional: Buat 1 user pegawai untuk tes
         User::create([
             'name' => 'Pegawai IDKD',
             'username' => 'Pegawai',
             'password' => Hash::make('pegawai123'),
             'nip' => '999999999999999999',
-            'role_id' => $rolePegawai->id,   // Sambungkan ke Role Pegawai
+            'role_id' => $rolePegawai->id,
             'is_active' => true,
-            'created_by' => 1, // Dibuat oleh user id 1 (Admin)
+            'created_by' => 1, 
+        ]);
+
+        // ---------------------------------------------
+        // SEEDER EKSTERNAL
+        // ---------------------------------------------
+
+        $this->call([
+            ProvinceSeeder::class,
+            RegencySeeder::class, 
+            OpdSeeder::class,
         ]);
     }
 }
