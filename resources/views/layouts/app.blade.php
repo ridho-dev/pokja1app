@@ -52,7 +52,10 @@
                                 <details class="nav-dropdown">
                                     <summary class="hover:bg-blue-800 hover:text-white rounded-md">Pengaturan</summary>
                                     <ul class="p-2 bg-base-100 text-base-content rounded-t-none shadow-lg w-52 text-base z-50">
-                                        <li><a href="#">Manajemen User</a></li>
+                                        {{-- HANYA ADMIN YANG BISA LIHAT MENU INI --}}
+                                        @can('manage-users')
+                                            <li><a href="#">Manajemen User</a></li>
+                                        @endcan
                                         <li><a href="#">Referensi</a></li>
                                     </ul>
                                 </details>
@@ -74,9 +77,12 @@
                             <li><a>Ubah Password</a></li>
                             <div class="divider my-0"></div>
                             <li>
-                                <form method="POST" action="{{ route('logout') }}">
+                                <a onclick="event.preventDefault(); this.nextElementSibling.submit();"
+                                    class="text-red-600 font-bold cursor-pointer">
+                                    Logout
+                                </a>
+                                <form method="POST" action="{{ route('logout') }}" class="hidden">
                                     @csrf 
-                                    <button type="submit" class="w-full text-left text-red-600 font-semibold">Logout</button>
                                 </form>
                             </li>
                         </ul>
@@ -109,7 +115,7 @@
                     </div>
                     <div>
                         <p class="font-bold text-lg">Halo, {{ auth()->user()->name }}</p>
-                        <p class="text-xs text-gray-500">Administrator</p>
+                        <p class="text-xs text-gray-500">{{ auth()->user()->role?->name }}</p>
                     </div>
                 </div>
 
@@ -129,7 +135,9 @@
                     <details>
                         <summary class="text-base font-medium">Pengaturan</summary>
                         <ul class="text-base">
-                            <li><a href="#">Manajemen User</a></li>
+                            @can('manage-users')
+                                <li><a href="#">Manajemen User</a></li>
+                            @endcan
                             <li><a href="#">Referensi</a></li>
                         </ul>
                     </details>
@@ -144,11 +152,15 @@
                             <li><a>Profil</a></li>
                             <li><a>Ubah Password</a></li>
                             <li>
+                                <a onclick="event.preventDefault(); this.nextElementSibling.submit();"
+                                    class="text-red-600 font-bold cursor-pointer">
+                                    Logout
+                                </a>
                                 <form method="POST" action="{{ route('logout') }}">
-                                    @csrf 
-                                    <button type="submit" class="text-red-600 font-bold">Logout</button>
+                                    @csrf
                                 </form>
                             </li>
+                            
                         </ul>
                     </details>
                 </li>

@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 
-// 1. Halaman Login (Tamu only)
+// 1. Halaman Login 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'index'])->name('login');
     Route::post('/login', [LoginController::class, 'authenticate'])->name('login.post');
@@ -14,17 +14,19 @@ Route::middleware('guest')->group(function () {
     });
 });
 
-// 2. Halaman Dashboard (Hanya yang sudah Login)
+// 2. Halaman untuk user yang sudah login
 Route::middleware('auth')->group(function () {
-    
+    // Dashboard
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    // PEMBATASAN AKSES
+    // PERLU KETIKA MEMBUAT HALAMAN MANAJEMEN USER
+    // Route::middleware('can:manage-users')->group(function () {
+    //     Route::get('/users', [])
+    // })
 });
 
-// Halaman Logout
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
-});
