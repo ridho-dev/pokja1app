@@ -9,7 +9,13 @@ class Opd extends Model
 {
     public $incrementing = false;
     
-    protected $fillable = ['regency_id', 'name', 'created_by'];
+    protected $fillable = [
+        'regency_id',
+        'name',
+        'created_by',
+        'start_date',
+        'end_date',
+    ];
 
     public function regency(): BelongsTo
     {

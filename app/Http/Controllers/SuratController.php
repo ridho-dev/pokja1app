@@ -1,0 +1,114 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Letter;
+use App\Models\LetterType;
+use App\Models\Opd;
+use App\Models\Province;
+use App\Models\Regency;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+
+class SuratController extends Controller
+{
+    public function index()
+    {
+        // Mengambil data surat beserta relasinya
+        $letters = Letter::with(['province', 'regency', 'opd', 'letterType', 'uploader'])
+                        ->latest()
+                        ->paginate(10);
+
+        // Mengarahkan ke file blade (pastikan lokasinya sesuai)
+        return view('pages.daftar-surat', compact('letters'));
+    }
+
+    public function create() 
+    {
+        $provinces = Province::all();
+        // Sementara: tidak semua types ditampilkan
+        $types = LetterType::whereIn('id', [11, 12, 21, 22])->get(); 
+
+        return view('pages.upload', compact('provinces', 'types'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'province_id' => 'required', 
+            'regency_id'  => 'required',
+            'opd_id' => 'required',
+            'letter_type_id' => 'required',
+            'letter_number' => 'required',
+            'letter_date' => 'required|date',
+            'file_surat' => 'required|mimes:pdf,doc,docx,jpg,png|max:20480',
+        ]);
+
+        // Untuk Upload PKS
+        if ($request->letter_type_id == 22) {
+            $rules['start_date'] = 'required|date';
+            $rules['end_date']   = 'required|date|after_or_equal:start_date';
+        }
+
+        // Membangun struktur folder
+        $province = Province::findOrFail($request->province_id);
+        $regency  = Regency::findOrFail($request->regency_id);
+        $opd      = Opd::findOrFail($request->opd_id);
+        $type     = LetterType::findOrFail($request->letter_type_id);
+
+        // Membersihkan string
+        $forbidden = ['/', '\\', ':', '*', '?', '"', '<', '>', '|'];
+    
+        $folderProv = str_replace($forbidden, '-', $province->name);
+        $folderKab  = str_replace($forbidden, '-', $regency->name);
+        $folderOpd  = str_replace($forbidden, '-', $opd->name);
+        $folderType = str_replace($forbidden, '-', $type->letter_type);
+
+        $folderPath = "uploads/{$folderProv}/{$folderKab}/{$folderOpd}/{$folderType}";
+
+        $file = $request->file('file_surat');
+        $originalName = $file->getClientOriginalName();
+        $storedFileName = $originalName;
+
+        $path = $file->storeAs($folderPath, $storedFileName, 'main_storage');
+
+
+        Letter::create([
+            'province_id' => $request->province_id,
+            'regency_id'  => $request->regency_id,
+            'opd_id' => $request->opd_id,
+            'letter_type_id' => $request->letter_type_id,
+            'letter_number' => $request->letter_number,
+            'letter_date' => $request->letter_date,
+            'file_path' => $path, // Yang disimpan cuma "uploads/namafile.pdf"
+            'file_name' => $originalName,
+            'uploaded_by' => Auth::id(),
+            'start_date' => $request->start_date ?? null, // Simpan jika ada
+            'end_date'   => $request->end_date ?? null,
+        ]);
+
+        // Tambahkan masa PKS ke tabel OPD
+        if ($request->letter_type_id == 22) {
+            $opd = Opd::find($request->opd_id);
+            if ($opd) {
+                $opd->update([
+                    'start_date' => $request->start_date,
+                    'end_date'   => $request->end_date,
+                ]);
+            }
+        }
+
+        return back()->with('success', 'Surat berhasil diupload!');
+    }
+
+    public function getRegencies($provinceId)
+    {   
+        return response()->json(Regency::where('province_id', $provinceId)->get());
+    }
+
+    public function getOpds($regencyId)
+    {
+        return response()->json(Opd::where('regency_id', $regencyId)->get());
+    }
+}

@@ -26,7 +26,7 @@
                     
                     <a href="{{ url('/') }}" class="flex items-center gap-3 text-white hover:text-gray-200 group">
                         <div class="w-8 h-8 flex items-center justify-center">
-                            <x-icons.kemendagri-icon class="w-full h-full group-hover:opacity-90 transition-opacity" />
+                            <x-icons.kemendagri-icon class="w-8 h-8 group-hover:opacity-90 transition-opacity" />
                         </div>
                         <span class="text-xl font-bold normal-case tracking-wide">
                             Pokja1App
@@ -42,8 +42,18 @@
                                 <details class="nav-dropdown">
                                     <summary class="hover:bg-blue-800 hover:text-white rounded-md">Persuratan</summary>
                                     <ul class="p-2 bg-base-100 text-base-content rounded-t-none shadow-lg w-52 text-base z-50">
-                                        <li><a href="#">Daftar Surat</a></li>
-                                        <li><a href="#">Upload Surat</a></li>
+                                        <li>
+                                            <a href="{{ route('surat.index') }}" 
+                                                class="{{ request()->routeIs('surat.index') ? 'active' : '' }}">
+                                                Daftar Surat
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('surat.create') }}" 
+                                                class="{{ request()->routeIs('surat.create') ? 'active' : '' }}">
+                                                Upload Surat
+                                            </a>
+                                        </li>
                                     </ul>
                                 </details>
                             </li>
@@ -125,8 +135,18 @@
                     <details>
                         <summary class="text-base font-medium">Persuratan</summary>
                         <ul class="text-base">
-                            <li><a href="#">Daftar Surat</a></li>
-                            <li><a href="#">Upload Surat</a></li>
+                            <li>
+                                <a href="{{ route('surat.index') }}" 
+                                    class="{{ request()->routeIs('surat.index') ? 'active' : '' }}">
+                                    Daftar Surat
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('surat.create') }}" 
+                                    class="{{ request()->routeIs('surat.create') ? 'active' : '' }}">
+                                    Upload Surat
+                                </a>
+                            </li>
                         </ul>
                     </details>
                 </li>

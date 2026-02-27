@@ -60,6 +60,12 @@ return [
             'report' => false,
         ],
 
+        'main_storage' => [
+            'driver' => 'local',
+            'root' => 'D:/ArsipSurat', // Lokasi folder di Drive D
+            'throw' => false,
+        ]
+
     ],
 
     /*
