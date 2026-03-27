@@ -36,6 +36,7 @@
                 </select>
             </div>
 
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="form-control">
                     <label class="label"><span class="label-text font-semibold">Provinsi</span></label>
@@ -46,7 +47,6 @@
                         @endforeach
                     </select>
                 </div>
-
                 <div class="form-control">
                     <label class="label"><span class="label-text font-semibold">Kabupaten/Kota</span></label>
                     <select name="regency_id" id="regency" class="select select-bordered w-full" disabled onchange="loadOpds(this.value)">
@@ -55,12 +55,20 @@
                 </div>
             </div>
 
-            <div class="form-control mt-4">
-                <label class="label"><span class="label-text font-semibold">Perangkat Daerah (OPD)</span></label>
-                <select name="opd_id" id="opd" class="select select-bordered w-full" required disabled>
-                    <option disabled selected>-- Pilih Kabupaten Dulu --</option>
-                </select>
-            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-semibold">Perangkat Daerah (OPD)</span></label>
+                    <select name="opd_id[]" id="opd" class="w-full" multiple disabled required>
+                        <option disabled selected value="">-- Pilih Kabupaten Dulu --</option>
+                    </select>
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-semibold">Kloter</span></label>
+                    <input type="text" name="kloter" id="kloter" placeholder="1" class="input input-bordered w-full" />
+                </div>
+            </div>    
+            
 
             <div id="extra-dates" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 mt-4 hidden">
                 <div class="form-control">
@@ -86,6 +94,7 @@
                     <input type="date" name="letter_date" class="input input-bordered w-full" required />
                 </div>
             </div>
+
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                 <div class="form-control">
@@ -114,6 +123,25 @@
 
 {{-- SCRIPT JAVASCRIPT UNTUK DROPDOWN DINAMIS --}}
 <script>
+
+    // Tom Select untuk OPD (multi-select dengan fitur hapus pilihan)
+    let opdTomSelect;
+    document.addEventListener("DOMContentLoaded", function() {
+        if (document.getElementById('opd')) {
+            opdTomSelect = new TomSelect("#opd", {
+                plugins: ['remove_button'],
+                create: false,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                },
+                placeholder: "-- Pilih OPD --" // Tambahkan placeholder di sini
+            });
+            
+            // Disable Tom Select di awal karena Kabupaten belum dipilih
+            opdTomSelect.disable(); 
+        }
+    });
 
     function checkLetterType(typeId) {
         const extraDatesDiv = document.getElementById('extra-dates');
@@ -161,19 +189,35 @@
             });
     }
 
-    // Fungsi load OPD saat Kabupaten dipilih
     function loadOpds(regencyId) {
-        const opdSelect = document.getElementById('opd');
-        opdSelect.innerHTML = '<option disabled selected>Loading...</option>';
+    // Pastikan Tom Select sudah terinisialisasi
+        if (!opdTomSelect) return;
+
+        // Kosongkan pilihan yang sudah dipilih user sebelumnya (jika ada)
+        opdTomSelect.clear(); 
+        // Kosongkan daftar opsi dropdown sebelumnya
+        opdTomSelect.clearOptions(); 
+        // Nonaktifkan sementara saat proses fetch berjalan (opsional tapi disarankan)
+        opdTomSelect.disable(); 
 
         fetch(`/api/opds/${regencyId}`)
             .then(response => response.json())
             .then(data => {
-                opdSelect.innerHTML = '<option disabled selected>-- Pilih OPD --</option>';
+                // Looping data dan masukkan ke Tom Select
                 data.forEach(opd => {
-                    opdSelect.innerHTML += `<option value="${opd.id}">${opd.name}</option>`;
+                    // addOption menerima objek dengan properti value dan text
+                    opdTomSelect.addOption({
+                        value: opd.id,
+                        text: opd.name
+                    });
                 });
-                opdSelect.disabled = false;
+
+                // Aktifkan kembali input setelah data berhasil dimuat
+                opdTomSelect.enable();
+            })
+            .catch(error => {
+                console.error('Error fetching OPDs:', error);
+                opdTomSelect.enable();
             });
     }
 

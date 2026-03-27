@@ -8,3 +8,6 @@ window.Alpine = Alpine;
 
 // Jalankan Alpine
 Alpine.start();
+
+import TomSelect from 'tom-select';
+window.TomSelect = TomSelect;

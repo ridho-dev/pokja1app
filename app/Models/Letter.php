@@ -5,19 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Letter extends Model
 {
     use HasFactory;
 
-    const CREATED_AT = 'upload_date';
-    const UPDATED_AT = 'updated_date';
+    // const CREATED_AT = 'upload_date';
+    // const UPDATED_AT = 'updated_date';
 
     protected $fillable = [
         'file_name',
-        'province_id',
-        'regency_id',
-        'opd_id',
+        'kloter',
         'letter_number',
         'letter_type_id',
         'letter_date',
@@ -56,9 +55,10 @@ class Letter extends Model
     /**
      * Relasi ke OPD
      */
-    public function opd(): BelongsTo
+    public function opds(): BelongsToMany
     {
-        return $this->belongsTo(Opd::class, 'opd_id');
+        // belongsToMany(ModelTujuan, NamaTabelPivot, KolomForeignDiPivot, KolomTujuanDiPivot)
+        return $this->belongsToMany(Opd::class, 'letter_opd', 'letter_id', 'opd_id');   
     }
 
     /**

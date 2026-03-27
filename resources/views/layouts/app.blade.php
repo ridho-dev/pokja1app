@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Aplikasi Pokja')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+    /* Menyesuaikan wadah utama Tom Select (untuk kolom select yg pakai TS) */
+    .ts-control {
+        min-height: 2.5rem !important; /* Tinggi sama persis dengan input DaisyUI */
+    }
+
+</style>
 </head>
 
 <body class="antialiased font-sans text-base">
