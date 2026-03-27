@@ -64,6 +64,7 @@ class DatabaseSeeder extends Seeder
             ProvinceSeeder::class,
             RegencySeeder::class, 
             OpdSeeder::class,
+            LetterTypeSeeder::class,
         ]);
     }
 }

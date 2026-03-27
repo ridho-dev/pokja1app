@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('letters', function (Blueprint $table) {
-            $table->string('letter_number')->nullable()->after('opd_id');
+        Schema::create('letter_opd', function (Blueprint $table) {
+            $table->foreignId('letter_id')
+                    ->constrained('letters')
+                    ->cascadeOnDelete();
+            $table->foreignId('opd_id')
+                    ->constrained('opds')
+                    ->cascadeOnDelete();
         });
     }
 
@@ -21,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('letters', function (Blueprint $table) {
-            $table->dropColumn('letter_number');
-        });
+        Schema::dropIfExists('letter_opd');
     }
 };
