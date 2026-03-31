@@ -62,6 +62,10 @@
                     <select name="opd_id[]" id="opd" class="w-full" multiple disabled required>
                         <option disabled selected value="">-- Pilih Kabupaten Dulu --</option>
                     </select>
+                    <label class="cursor-pointer label justify-start gap-2 mt-2">
+                    <input type="checkbox" id="toggle-opd-multiple" class="checkbox checkbox-sm" />
+                    <span class="label-text">OPD lebih dari 1</span>
+        </label>
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text font-semibold">Kloter</span></label>
@@ -126,20 +130,57 @@
 
     // Tom Select untuk OPD (multi-select dengan fitur hapus pilihan)
     let opdTomSelect;
+
     document.addEventListener("DOMContentLoaded", function() {
-        if (document.getElementById('opd')) {
-            opdTomSelect = new TomSelect("#opd", {
-                plugins: ['remove_button'],
-                create: false,
-                sortField: {
-                    field: "text",
-                    direction: "asc"
-                },
-                placeholder: "-- Pilih OPD --" // Tambahkan placeholder di sini
+        const opdSelect = document.getElementById('opd');
+        const toggleCheckbox = document.getElementById('toggle-opd-multiple');
+        
+        if (!opdSelect) return;
+
+        //Inisialisasi Tom Select
+        opdTomSelect = new TomSelect(opdSelect, {
+            plugins: ['remove_button'],
+            create: false,
+            sortField: {
+                field: "text",
+                direction: "asc"
+            },
+            placeholder: "-- Pilih OPD --",
+            maxItems: 1, 
+            controlInput: '<input type="text" readonly>'
+        });
+
+        opdTomSelect.disable();
+
+        if (toggleCheckbox) {
+            toggleCheckbox.addEventListener('change', function() {
+                const isMultiple = this.checked;
+                
+                // Memanggil console log yang benar
+                console.log('Checkbox OPD lebih dari 1:', isMultiple);
+                console.log('Max Items (Sebelum diubah):', opdTomSelect.settings.maxItems);
+
+                if (isMultiple) {
+                    // -- MODE MULTIPLE --
+                    opdSelect.setAttribute('name', 'opd_id[]'); // Format array untuk Laravel
+                    opdTomSelect.settings.maxItems = null;      // Hapus batasan limit (null = tak terbatas)
+                    opdTomSelect.settings.mode = 'multi';
+                } else {
+                    // -- MODE SINGLE --
+                    opdSelect.setAttribute('name', 'opd_id');   
+                    opdTomSelect.settings.maxItems = 1;         // Kembalikan batasan menjadi 1 item
+                    opdTomSelect.settings.mode = 'single';
+
+                    // Logika pembersihan:
+                    if (opdTomSelect.items.length > 1) {
+                        const firstItem = opdTomSelect.items; 
+                        opdTomSelect.clear(true);
+                        opdTomSelect.addItem(firstItem);
+                    }
+                }
+                // Sinkronisasi ulang tampilan
+                opdTomSelect.refreshState();
             });
-            
-            // Disable Tom Select di awal karena Kabupaten belum dipilih
-            opdTomSelect.disable(); 
         }
     });
 
