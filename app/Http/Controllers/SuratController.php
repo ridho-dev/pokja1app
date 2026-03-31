@@ -16,12 +16,12 @@ class SuratController extends Controller
     public function index()
     {
         // Mengambil data surat beserta relasinya
-        $letters = Letter::with(['province', 'regency', 'opd', 'letterType', 'uploader'])
+        $letters = Letter::with(['opds', 'letterType', 'uploader'])
                         ->latest()
                         ->paginate(10);
 
         // Mengarahkan ke file blade (pastikan lokasinya sesuai)
-        return view('pages.daftar-surat', compact('letters'));
+        return view('pages.daftar-surat-p1', compact('letters'));
     }
 
     public function create() 
