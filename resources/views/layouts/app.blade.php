@@ -43,7 +43,7 @@
                     {{-- Menu Desktop (Hanya Tampil di Layar Besar / lg:flex) --}}
                     <div class="hidden lg:flex">
                         <ul class="menu menu-horizontal px-1 gap-1 text-base">
-                            <li><a href="#" class="hover:bg-blue-800 hover:text-white rounded-md">Dashboard</a></li>
+                            <li><a href="{{ route('dashboard') }}" class="hover:bg-blue-800 hover:text-white rounded-md">Dashboard</a></li>
 
                             <li>
                                 <details class="nav-dropdown">

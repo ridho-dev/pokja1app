@@ -21,7 +21,7 @@
     <div class="card-body">
         <h2 class="card-title text-2xl font-bold mb-6 text-[#102C57]">Form Upload Surat</h2>
 
-        {{-- Pastikan ada enctype="multipart/form-data" untuk upload file --}}
+        {{-- Harus ada enctype="multipart/form-data" untuk upload file --}}
         <form action="{{ route('surat.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
@@ -62,12 +62,15 @@
                     <select name="opd_id[]" id="opd" class="w-full" multiple disabled required>
                         <option disabled selected value="">-- Pilih Kabupaten Dulu --</option>
                     </select>
-                    <label class="cursor-pointer label justify-start gap-2 mt-2">
-                    <input type="checkbox" id="toggle-opd-multiple" class="checkbox checkbox-sm" />
-                    <span class="label-text">OPD lebih dari 1</span>
+                    <div id="multipleOPDCheckbox">
+                        <label class="cursor-pointer label justify-start gap-2 mt-2">
+                        <input type="checkbox" id="toggle-opd-multiple" class="checkbox checkbox-sm" />
+                        <span class="label-text">OPD lebih dari 1</span>
+                    </div>
+                    
         </label>
                 </div>
-                <div class="form-control">
+                <div class="form-control" id="kloterInput">
                     <label class="label"><span class="label-text font-semibold">Kloter</span></label>
                     <input type="text" name="kloter" id="kloter" placeholder="1" class="input input-bordered w-full" />
                 </div>
@@ -189,13 +192,19 @@
         const startDateInput = document.getElementById('start_date');
         const endDateInput = document.getElementById('end_date');
 
+        const kloterInput = document.getElementById('kloterInput');
+        const multipleOPDCheckbox = document.getElementById('multipleOPDCheckbox');
+
         // Jika ID adalah 22, TAMPILKAN form tanggal
-        if (typeId == 22) {
+        if (typeId == 23) {
             extraDatesDiv.classList.remove('hidden'); // Hapus class hidden
             
             // Wajib diisi agar validasi browser jalan
             startDateInput.required = true;
             endDateInput.required = true;
+
+            kloterInput.classList.add('hidden');
+            multipleOPDCheckbox.classList.add('hidden');
         } else {
             // Jika ID 11, 12, 21, SEMBUNYIKAN form tanggal
             extraDatesDiv.classList.add('hidden'); // Tambah class hidden

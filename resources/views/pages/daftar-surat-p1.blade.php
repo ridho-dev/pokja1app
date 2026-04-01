@@ -46,14 +46,14 @@
                                     @php
                                         // 1. Daftar pemetaan ID Jenis Surat ke kode warna HEX yang kontras
                                         $badgeColors = [
-                                            11 => '#2563EB', // Biru Terang (Blue)
-                                            12 => '#16A34A', // Hijau Daun (Green)
-                                            21 => '#9333EA', // Ungu (Purple)
-                                            22 => '#0891B2', // Tosca Gelap (Cyan)
-                                            23 => '#EA580C', // Oranye (Orange)
-                                            24 => '#DB2777', // Merah Muda (Pink)
-                                            25 => '#DC2626', // Merah Terang (Red)
-                                            26 => '#4B5563', // Abu-abu Gelap (Slate)
+                                            11 => '#2563EB', // Biru Terang
+                                            12 => '#16A34A', // Hijau Daun
+                                            21 => '#9333EA', // Ungu
+                                            22 => '#0891B2', // Tosca Gelap
+                                            23 => '#EA580C', // Oranye
+                                            24 => '#DB2777', // Merah Muda
+                                            25 => '#DC2626', // Merah Terang
+                                            26 => '#4B5563', // Abu-abu Gelap
                                         ];
 
                                         $hexColor = $badgeColors[$letter->letter_type_id] ?? '#9CA3AF'; 
