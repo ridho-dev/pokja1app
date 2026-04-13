@@ -58,7 +58,9 @@ class Letter extends Model
     public function opds(): BelongsToMany
     {
         // belongsToMany(ModelTujuan, NamaTabelPivot, KolomForeignDiPivot, KolomTujuanDiPivot)
-        return $this->belongsToMany(Opd::class, 'letter_opd', 'letter_id', 'opd_id');   
+        return $this->belongsToMany(Opd::class, 'letter_opd', 'letter_id', 'opd_id')
+        ->using(LetterOpd::class) // <-- GUNAKAN CUSTOM PIVOT
+                    ->withPivot('p1_type_id');
     }
 
     /**

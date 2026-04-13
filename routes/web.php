@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SuratController;
+use App\Http\Controllers\DashboardController;
 
 // 1. Halaman Login 
 Route::middleware('guest')->group(function () {
@@ -18,9 +19,7 @@ Route::middleware('guest')->group(function () {
 // 2. Halaman untuk user yang sudah login
 Route::middleware('auth')->group(function () {
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Upload Surat
     Route::get('/pages/upload', [SuratController::class, 'create'])->name('surat.create');
