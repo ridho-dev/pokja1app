@@ -56,25 +56,42 @@
             </div>
 
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
                 <div class="form-control">
-                    <label class="label"><span class="label-text font-semibold">Perangkat Daerah (OPD)</span></label>
-                    <select name="opd_id[]" id="opd" class="w-full" multiple disabled required>
+                    <label class="label">
+                        <span class="label-text font-semibold">Izin Baru</span>
+                    </label>                    
+                    <select name="opd_baru_id[]" id="opdIzinBaru" class="w-full" multiple disabled required>
                         <option disabled selected value="">-- Pilih Kabupaten Dulu --</option>
                     </select>
-                    <div id="multipleOPDCheckbox">
-                        <label class="cursor-pointer label justify-start gap-2 mt-2">
-                        <input type="checkbox" id="toggle-opd-multiple" class="checkbox checkbox-sm" />
-                        <span class="label-text">OPD lebih dari 1</span>
+                    <div class="mt-2">
+                        <label class="cursor-pointer label justify-start gap-2">
+                            <input type="checkbox" id="toggle-opd-baru" class="checkbox checkbox-sm" />
+                            <span class="label-text">Pilih lebih dari 1 OPD</span>
+                        </label>
                     </div>
-                    
-        </label>
                 </div>
+
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-semibold">OPD Perpanjangan</span></label>                    
+                    <select name="opd_perpanjangan_id[]" id="opdPerpanjangan" class="w-full" multiple disabled required>
+                        <option disabled selected value="">-- Pilih Kabupaten Dulu --</option>
+                    </select>
+                    <div class="mt-2">
+                        <label class="cursor-pointer label justify-start gap-2">
+                            <input type="checkbox" id="toggle-opd-perpanjangan" class="checkbox checkbox-sm" />
+                            <span class="label-text">Pilih lebih dari 1 OPD</span>
+                        </label>
+                    </div>
+                </div>                
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="form-control" id="kloterInput">
                     <label class="label"><span class="label-text font-semibold">Kloter</span></label>
                     <input type="text" name="kloter" id="kloter" placeholder="1" class="input input-bordered w-full" />
                 </div>
-            </div>    
+            </div>
             
 
             <div id="extra-dates" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 mt-4 hidden">
@@ -131,61 +148,76 @@
 {{-- SCRIPT JAVASCRIPT UNTUK DROPDOWN DINAMIS --}}
 <script>
 
-    // Tom Select untuk OPD (multi-select dengan fitur hapus pilihan)
-    let opdTomSelect;
+    let opdBaruTomSelect, opdPerpanjanganTomSelect;
 
     document.addEventListener("DOMContentLoaded", function() {
-        const opdSelect = document.getElementById('opd');
-        const toggleCheckbox = document.getElementById('toggle-opd-multiple');
         
-        if (!opdSelect) return;
-
-        //Inisialisasi Tom Select
-        opdTomSelect = new TomSelect(opdSelect, {
+        // Konfigurasi Global TomSelect
+        const tomConfig = {
             plugins: ['remove_button'],
             create: false,
-            sortField: {
-                field: "text",
-                direction: "asc"
-            },
+            hideSelected: true, // <-- SOLUSI: Hilangkan opsi dari daftarnya sendiri setelah dipilih
+            sortField: { field: "text", direction: "asc" },
             placeholder: "-- Pilih OPD --",
             maxItems: 1, 
             controlInput: '<input type="text" readonly>'
-        });
+        };
 
-        opdTomSelect.disable();
+        // FUNGSI INISIALISASI
+        function initTomSelect(selectId, toggleId, baseName) {
+            const selectEl = document.getElementById(selectId);
+            const toggleEl = document.getElementById(toggleId);
+            
+            if (!selectEl) return null;
 
-        if (toggleCheckbox) {
-            toggleCheckbox.addEventListener('change', function() {
-                const isMultiple = this.checked;
-                
-                // Memanggil console log yang benar
-                console.log('Checkbox OPD lebih dari 1:', isMultiple);
-                console.log('Max Items (Sebelum diubah):', opdTomSelect.settings.maxItems);
+            const tsInstance = new TomSelect(selectEl, tomConfig);
+            tsInstance.disable();
 
-                if (isMultiple) {
-                    // -- MODE MULTIPLE --
-                    opdSelect.setAttribute('name', 'opd_id[]'); // Format array untuk Laravel
-                    opdTomSelect.settings.maxItems = null;      // Hapus batasan limit (null = tak terbatas)
-                    opdTomSelect.settings.mode = 'multi';
-                } else {
-                    // -- MODE SINGLE --
-                    opdSelect.setAttribute('name', 'opd_id');   
-                    opdTomSelect.settings.maxItems = 1;         // Kembalikan batasan menjadi 1 item
-                    opdTomSelect.settings.mode = 'single';
+            // Pasang event listener untuk checkbox jika elemennya ada
+            if (toggleEl) {
+                toggleEl.addEventListener('change', (e) => toggleMode(e.target.checked, tsInstance, selectEl, baseName));
+            }
+            
+            return tsInstance;
+        }
 
-                    // Logika pembersihan:
-                    if (opdTomSelect.items.length > 1) {
-                        const firstItem = opdTomSelect.items; 
-                        opdTomSelect.clear(true);
-                        opdTomSelect.addItem(firstItem);
-                    }
-                }
-                // Sinkronisasi ulang tampilan
-                opdTomSelect.refreshState();
+        // menjalankan inisialisasi 
+        opdBaruTomSelect = initTomSelect('opdIzinBaru', 'toggle-opd-baru', 'opd_baru_id');
+        opdPerpanjanganTomSelect = initTomSelect('opdPerpanjangan', 'toggle-opd-perpanjangan', 'opd_perpanjangan_id');
+
+        // fungsi untuk menghindari duplikasi data pada kedua kolom
+        function syncMutualExclusion(source, target) {
+            // Jika data dipilih pada kolom A, hapus dari kolom B
+            source.on('item_add', (value) => target.removeOption(value));
+            
+            // sebaliknya
+            source.on('item_remove', function(value) {
+                target.addOption({ value: value, text: this.options[value].text });
             });
         }
+
+        if (opdBaruTomSelect && opdPerpanjanganTomSelect) {
+            syncMutualExclusion(opdBaruTomSelect, opdPerpanjanganTomSelect);
+            syncMutualExclusion(opdPerpanjanganTomSelect, opdBaruTomSelect);
+        }
     });
+
+    // FUNGSI TOGGLE SINGLE/MULTIPLE
+    function toggleMode(isMultiple, tsInstance, selectElement, baseName) {
+        // Gunakan ternary operator agar lebih singkat
+        selectElement.setAttribute('name', isMultiple ? baseName + '[]' : baseName); 
+        tsInstance.settings.maxItems = isMultiple ? null : 1;
+        tsInstance.settings.mode = isMultiple ? 'multi' : 'single';
+
+        // Jika kembali ke Single, potong sisa pilihan dan sisakan 1 saja
+        if (!isMultiple && tsInstance.items.length > 1) {
+            const firstItem = tsInstance.items; // FIX: Tambahkan untuk mengambil data pertama
+            tsInstance.clear(true);
+            tsInstance.addItem(firstItem);
+        }
+        
+        tsInstance.sync(); 
+    }
 
     function checkLetterType(typeId) {
         const extraDatesDiv = document.getElementById('extra-dates');
@@ -221,54 +253,68 @@
     // Fungsi load Kabupaten saat Provinsi dipilih
     function loadRegencies(provinceId) {
         const regencySelect = document.getElementById('regency');
-        const opdSelect = document.getElementById('opd');
-        // Reset dropdown bawahnya
-        regencySelect.innerHTML = '<option disabled selected>Loading...</option>';
-        opdSelect.innerHTML = '<option disabled selected>-- Pilih Kabupaten Dulu --</option>';
-        opdSelect.disabled = true;
+        
+        // Ubah status dropdown Kabupaten menjadi Loading
+        regencySelect.innerHTML = '<option disabled selected value="">Loading...</option>';
+        regencySelect.disabled = true;
 
-        // Panggil API Laravel
-        fetch(`/api/regencies/${provinceId}`)
-            .then(response => response.json())
-            .then(data => {
-                regencySelect.innerHTML = '<option disabled selected>-- Pilih Kabupaten --</option>';
-                data.forEach(regency => {
-                    regencySelect.innerHTML += `<option value="${regency.id}">${regency.name}</option>`;
-                });
-                regencySelect.disabled = false;
-            });
+        // Bersihkan dan matikan kedua kotak Tom Select OPD karena provinsinya berubah
+        if (opdBaruTomSelect) {
+            opdBaruTomSelect.clear();
+            opdBaruTomSelect.clearOptions();
+            opdBaruTomSelect.disable();
+        }
+        if (opdPerpanjanganTomSelect) {
+            opdPerpanjanganTomSelect.clear();
+            opdPerpanjanganTomSelect.clearOptions();
+            opdPerpanjanganTomSelect.disable();
+        }
+
+        // Panggil API untuk mengambil data Kabupaten
+        if (provinceId) {
+            fetch(`/api/regencies/${provinceId}`)
+                .then(response => response.json())
+                .then(data => {
+                    regencySelect.innerHTML = '<option disabled selected value="">-- Pilih Kabupaten --</option>';
+                    data.forEach(regency => {
+                        regencySelect.innerHTML += `<option value="${regency.id}">${regency.name}</option>`;
+                    });
+                    regencySelect.disabled = false;
+                })
+                .catch(error => console.error('Gagal mengambil data Kabupaten:', error));
+        }
     }
 
     function loadOpds(regencyId) {
-    // Pastikan Tom Select sudah terinisialisasi
-        if (!opdTomSelect) return;
+        // Matikan dan kosongkan kedua kotak terlebih dahulu saat loading
+        if (opdBaruTomSelect) {
+            opdBaruTomSelect.clear();
+            opdBaruTomSelect.clearOptions();
+            opdBaruTomSelect.disable();
+        }
+        if (opdPerpanjanganTomSelect) {
+            opdPerpanjanganTomSelect.clear();
+            opdPerpanjanganTomSelect.clearOptions();
+            opdPerpanjanganTomSelect.disable();
+        }
 
-        // Kosongkan pilihan yang sudah dipilih user sebelumnya (jika ada)
-        opdTomSelect.clear(); 
-        // Kosongkan daftar opsi dropdown sebelumnya
-        opdTomSelect.clearOptions(); 
-        // Nonaktifkan sementara saat proses fetch berjalan (opsional tapi disarankan)
-        opdTomSelect.disable(); 
-
-        fetch(`/api/opds/${regencyId}`)
-            .then(response => response.json())
-            .then(data => {
-                // Looping data dan masukkan ke Tom Select
-                data.forEach(opd => {
-                    // addOption menerima objek dengan properti value dan text
-                    opdTomSelect.addOption({
-                        value: opd.id,
-                        text: opd.name
-                    });
-                });
-
-                // Aktifkan kembali input setelah data berhasil dimuat
-                opdTomSelect.enable();
-            })
-            .catch(error => {
-                console.error('Error fetching OPDs:', error);
-                opdTomSelect.enable();
-            });
+        if (regencyId) {
+            fetch(`/api/opds/${regencyId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        // Masukkan data ke dalam kedua Tom Select
+                        data.forEach(opd => {
+                            opdBaruTomSelect.addOption({value: opd.id, text: opd.name});
+                            opdPerpanjanganTomSelect.addOption({value: opd.id, text: opd.name});
+                        });
+                        // Nyalakan kembali kotaknya
+                        opdBaruTomSelect.enable();
+                        opdPerpanjanganTomSelect.enable();
+                    }
+                })
+                .catch(error => console.error('Gagal mengambil data OPD:', error));
+        }
     }
 
     // Fungsi untuk menghilangkan notifikasi upload sukses

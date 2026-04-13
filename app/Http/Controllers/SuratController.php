@@ -44,20 +44,25 @@ class SuratController extends Controller
             'file_surat'     => 'required|mimes:pdf,doc,docx,jpg,png|max:20480',
             
             // Validasi untuk OPD bertipe checkbox (array)
-            'opd_id'         => 'required|array', 
-            'opd_id.*'       => 'exists:opds,id',
+            'opd_baru_id'         => 'nullable|array', 
+            'opd_baru_id.*'       => 'exists:opds,id',
+            'opd_perpanjangan_id' => 'nullable|array', 
+            'opd_perpanjangan_id.*'=> 'exists:opds,id',
         ]);
 
-        // ==========================================
-        // 2. PENGECEKAN DUPLIKASI DATA
-        // ==========================================
+        // Cek duplikasi data
+        $allOpdIds = array_merge(
+            (array) $request->opd_baru_id, 
+            (array) $request->opd_perpanjangan_id
+        );
+
         $isDuplicate = Letter::where('letter_type_id', $request->letter_type_id)
             ->where('letter_number', $request->letter_number)
-            ->whereHas('opds', function ($query) use ($request) {
-                // Mengecek apakah surat tersebut sudah terikat dengan OPD yang dipilih
-                $query->whereIn('opds.id', $request->opd_id);
+            ->whereHas('opds', function ($query) use ($allOpdIds) {
+                // Mengecek duplikasi ke gabungan ID OPD
+                $query->whereIn('opds.id', $allOpdIds);
             })
-            ->exists(); // exists() akan mengembalikan nilai true jika data ditemukan
+            ->exists(); // mengembalikan nilai true jika data ditemukan
 
         if ($isDuplicate) {
             // Jika duplikat, kembalikan user ke form dengan pesan error
@@ -108,9 +113,25 @@ class SuratController extends Controller
             'end_date'   => $request->end_date ?? null,
         ]);
 
-        if ($request->has('opd_id')) {
-        // Method attach() akan otomatis memasukkan data ke tabel perantara
-            $letters->opds()->attach($request->opd_id);
+        $pivotData = [];
+
+        // 1. Masukkan OPD Izin Baru (ID Tipe = 1)
+        if ($request->has('opd_baru_id') && is_array($request->opd_baru_id)) {
+            foreach ($request->opd_baru_id as $opdId) {
+                $pivotData[$opdId] = ['p1_type_id' => 1]; 
+            }
+        }
+
+        // 2. Masukkan OPD Perpanjangan (ID Tipe = 2)
+        if ($request->has('opd_perpanjangan_id') && is_array($request->opd_perpanjangan_id)) {
+            foreach ($request->opd_perpanjangan_id as $opdId) {
+                $pivotData[$opdId] = ['p1_type_id' => 2]; 
+            }
+        }
+
+        //Simpan ke database
+        if (!empty($pivotData)) {
+            $letters->opds()->attach($pivotData);
         }
 
         // Tambahkan masa PKS ke tabel OPD

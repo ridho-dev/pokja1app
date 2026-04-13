@@ -65,6 +65,7 @@ class DatabaseSeeder extends Seeder
             RegencySeeder::class, 
             OpdSeeder::class,
             LetterTypeSeeder::class,
+            P1TypeSeeder::class,
         ]);
     }
 }
