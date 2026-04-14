@@ -57,13 +57,13 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="{{ route('surat.create') }}" 
+                                            <a href="{{ route('masukP1.create') }}" 
                                                 class="{{ request()->routeIs('surat.create') ? 'active' : '' }}">
                                                 Surat Masuk P1
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="{{ route('surat.create') }}" 
+                                            <a href="{{ route('balasanP1.create') }}" 
                                                 class="{{ request()->routeIs('surat.create') ? 'active' : '' }}">
                                                 Surat Balasan P1
                                             </a>
@@ -174,13 +174,13 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('surat.create') }}" 
+                                <a href="{{ route('masukP1.create') }}" 
                                     class="{{ request()->routeIs('surat.create') ? 'active' : '' }}">
                                     Surat Masuk P1
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('surat.create') }}" 
+                                <a href="{{ route('balasanP1.create') }}" 
                                     class="{{ request()->routeIs('surat.create') ? 'active' : '' }}">
                                     Surat Balasan P1
                                 </a>
