@@ -28,7 +28,7 @@ class SuratController extends Controller
     {
         $provinces = Province::all();
         // Sementara: tidak semua types ditampilkan
-        $types = LetterType::whereIn('id', [11, 12, 21, 22])->get(); 
+        $types = LetterType::whereIn('id', [11, 12])->get(); 
 
         return view('pages.upload', compact('provinces', 'types'));
     }

@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SuratController;
 use App\Http\Controllers\PKSController;
+use App\Http\Controllers\MasukP2Controller;
+use App\Http\Controllers\BalasanP2Controller;
 use App\Http\Controllers\DashboardController;
 
 // 1. Halaman Login 
@@ -22,11 +24,23 @@ Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Upload Surat
+    // Upload Surat P1
     Route::get('/pages/upload', [SuratController::class, 'create'])->name('surat.create');
     Route::post('/pages/upload', [SuratController::class, 'store'])->name('surat.store');
     Route::get('/api/regencies/{province_id}', [SuratController::class, 'getRegencies']);
     Route::get('/api/opds/{regency_id}', [SuratController::class, 'getOpds']);
+
+    // Upload Surat Masuk P2
+    Route::get('/pages/upload-masuk-p2', [MasukP2Controller::class, 'create'])->name('masukP2.create');
+    Route::post('/pages/upload-masuk-p2', [MasukP2Controller::class, 'store'])->name('masukP2.store');
+    Route::get('/api/regencies/{province_id}', [MasukP2Controller::class, 'getRegencies']);
+    Route::get('/api/opds/{regency_id}', [MasukP2Controller::class, 'getOpds']);
+
+    // Upload Balasan Masuk P2
+    Route::get('/pages/upload-balasan-p2', [BalasanP2Controller::class, 'create'])->name('balasanP2.create');
+    Route::post('/pages/upload-balasan-p2', [BalasanP2Controller::class, 'store'])->name('balasanP2.store');
+    Route::get('/api/regencies/{province_id}', [BalasanP2Controller::class, 'getRegencies']);
+    Route::get('/api/opds/{regency_id}', [BalasanP2Controller::class, 'getOpds']);
 
     // Upload PKS
     Route::get('/pages/upload-pks', [PKSController::class, 'create'])->name('pks.create');

@@ -35,19 +35,20 @@
                         <div class="w-8 h-8 flex items-center justify-center">
                             <x-icons.kemendagri-icon class="w-8 h-8 group-hover:opacity-90 transition-opacity" />
                         </div>
-                        <span class="text-xl font-bold normal-case tracking-wide">
-                            Pokja1App
-                        </span>
+                        <div class="flex flex-col">
+                            <span class="text-xl font-bold normal-case tracking-wide">Wilayah I</span>
+                            <span class="text-xs text-gray-300 normal-case tracking-wide">Sistem Manajemen Dokumen</span>
+                        </div>
+                        
                     </a>
 
                     {{-- Menu Desktop (Hanya Tampil di Layar Besar / lg:flex) --}}
                     <div class="hidden lg:flex">
                         <ul class="menu menu-horizontal px-1 gap-1 text-base">
                             <li><a href="{{ route('dashboard') }}" class="hover:bg-blue-800 hover:text-white rounded-md">Dashboard</a></li>
-
                             <li>
                                 <details class="nav-dropdown">
-                                    <summary class="hover:bg-blue-800 hover:text-white rounded-md">Persuratan</summary>
+                                    <summary class="hover:bg-blue-800 hover:text-white rounded-md">Upload</summary>
                                     <ul class="p-2 bg-base-100 text-base-content rounded-t-none shadow-lg w-52 text-base z-50">
                                         <li>
                                             <a href="{{ route('surat.index') }}" 
@@ -58,13 +59,31 @@
                                         <li>
                                             <a href="{{ route('surat.create') }}" 
                                                 class="{{ request()->routeIs('surat.create') ? 'active' : '' }}">
-                                                Upload Surat
+                                                Surat Masuk P1
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('surat.create') }}" 
+                                                class="{{ request()->routeIs('surat.create') ? 'active' : '' }}">
+                                                Surat Balasan P1
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('masukP2.create') }}" 
+                                                class="{{ request()->routeIs('p2.create') ? 'active' : '' }}">
+                                                Surat Masuk P2
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('balasanP2.create') }}" 
+                                                class="{{ request()->routeIs('p2.create') ? 'active' : '' }}">
+                                                Surat Balasan P2
                                             </a>
                                         </li>
                                         <li>
                                             <a href="{{ route('pks.create') }}" 
                                                 class="{{ request()->routeIs('pks.create') ? 'active' : '' }}">
-                                                Upload PKS
+                                                Perjanjian Kerja Sama
                                             </a>
                                         </li>
                                     </ul>
@@ -157,13 +176,31 @@
                             <li>
                                 <a href="{{ route('surat.create') }}" 
                                     class="{{ request()->routeIs('surat.create') ? 'active' : '' }}">
-                                    Upload Surat
+                                    Surat Masuk P1
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('surat.create') }}" 
+                                    class="{{ request()->routeIs('surat.create') ? 'active' : '' }}">
+                                    Surat Balasan P1
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('masukP2.create') }}" 
+                                    class="{{ request()->routeIs('surat.create') ? 'active' : '' }}">
+                                    Surat Masuk P2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('balasanP2.create') }}" 
+                                    class="{{ request()->routeIs('surat.create') ? 'active' : '' }}">
+                                    Surat Balasan P2
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('pks.create') }}" 
                                     class="{{ request()->routeIs('pks.create') ? 'active' : '' }}">
-                                    Upload PKS
+                                    Perjanjian Kerja Sama
                                 </a>
                             </li>
                         </ul>
