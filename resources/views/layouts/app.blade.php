@@ -61,6 +61,12 @@
                                                 Upload Surat
                                             </a>
                                         </li>
+                                        <li>
+                                            <a href="{{ route('pks.create') }}" 
+                                                class="{{ request()->routeIs('pks.create') ? 'active' : '' }}">
+                                                Upload PKS
+                                            </a>
+                                        </li>
                                     </ul>
                                 </details>
                             </li>
@@ -152,6 +158,12 @@
                                 <a href="{{ route('surat.create') }}" 
                                     class="{{ request()->routeIs('surat.create') ? 'active' : '' }}">
                                     Upload Surat
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('pks.create') }}" 
+                                    class="{{ request()->routeIs('pks.create') ? 'active' : '' }}">
+                                    Upload PKS
                                 </a>
                             </li>
                         </ul>

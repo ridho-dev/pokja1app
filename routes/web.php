@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SuratController;
+use App\Http\Controllers\PKSController;
 use App\Http\Controllers\DashboardController;
 
 // 1. Halaman Login 
@@ -24,9 +25,14 @@ Route::middleware('auth')->group(function () {
     // Upload Surat
     Route::get('/pages/upload', [SuratController::class, 'create'])->name('surat.create');
     Route::post('/pages/upload', [SuratController::class, 'store'])->name('surat.store');
-
     Route::get('/api/regencies/{province_id}', [SuratController::class, 'getRegencies']);
     Route::get('/api/opds/{regency_id}', [SuratController::class, 'getOpds']);
+
+    // Upload PKS
+    Route::get('/pages/upload-pks', [PKSController::class, 'create'])->name('pks.create');
+    Route::post('/pages/upload-pks', [PKSController::class, 'store'])->name('pks.store');
+    Route::get('/api/regencies/{province_id}', [PKSController::class, 'getRegencies']);
+    Route::get('/api/opds/{regency_id}', [PKSController::class, 'getOpds']);
 
     // Halaman Daftar Surat
     Route::get('/pages/daftar-surat', [SuratController::class, 'index'])->name('surat.index');

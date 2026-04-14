@@ -208,7 +208,7 @@
                                             {{-- Lakukan looping untuk menampilkan setiap OPD di baris baru --}}
                                             @foreach($letter->opds as $opd)
                                                 <div class="mb-1 truncate " title="{{ $opd->name }}">
-                                                    {{ $opd->pivot->p1Type->type_name }}
+                                                    {{ $opd->pivot->p1Type?->type_name }}
                                                 </div>
                                             @endforeach
                                         @else
