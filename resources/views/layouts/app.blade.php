@@ -94,11 +94,17 @@
                                 <details class="nav-dropdown">
                                     <summary class="hover:bg-blue-800 hover:text-white rounded-md">Pengaturan</summary>
                                     <ul class="p-2 bg-base-100 text-base-content rounded-t-none shadow-lg w-52 text-base z-50">
-                                        {{-- HANYA ADMIN YANG BISA LIHAT MENU INI --}}
-                                        @can('manage-users')
-                                            <li><a href="#">Manajemen User</a></li>
-                                        @endcan
+                                        
+                                        {{-- CEK ROLE SECARA LANGSUNG --}}
+                                        @if(Auth::check() && Auth::user()->role->id === 1)
+                                            <li>
+                                                
+                                                {{-- Masukkan route users.index di sini --}}
+                                                <a href="{{ route('users.index') }}">Manajemen User</a>
+                                            </li>
+                                        @endif
                                         <li><a href="#">Referensi</a></li>
+                                        
                                     </ul>
                                 </details>
                             </li>

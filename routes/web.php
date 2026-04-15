@@ -9,6 +9,7 @@ use App\Http\Controllers\BalasanP1Controller;
 use App\Http\Controllers\MasukP2Controller;
 use App\Http\Controllers\BalasanP2Controller;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 
 // 1. Halaman Login 
 Route::middleware('guest')->group(function () {
@@ -73,9 +74,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
     // PEMBATASAN AKSES
-    // PERLU KETIKA MEMBUAT HALAMAN MANAJEMEN USER
-    // Route::middleware('can:manage-users')->group(function () {
-    //     Route::get('/users', [])
-    // })
+    Route::middleware(['auth', 'admin'])->group(function () {
+        // Menampilkan halaman tabel user
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        // Memproses data tambah user baru (dari Modal)
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
+        // Menghapus user
+        Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+        
+    });
 });
 
