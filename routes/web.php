@@ -66,6 +66,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/pages/daftar-surat', [SuratController::class, 'index'])->name('surat.index');
     Route::get('/pages/download/{id}', [SuratController::class, 'download'])->name('surat.download');
 
+    // Halaman Detail Surat
+    Route::get('/surat/{id}', [SuratController::class, 'show'])->name('surat.show');
+    Route::get('/surat/{id}/view-file', [SuratController::class, 'viewFile'])->name('surat.file');
+
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
     // PEMBATASAN AKSES

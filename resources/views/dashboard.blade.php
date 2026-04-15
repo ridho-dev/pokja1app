@@ -140,6 +140,7 @@
                                 <th>Kloter</th>
                                 <th>Tanggal Surat</th>
                                 <th>Nomor Surat</th>
+                                <th class="text-center">Aksi</th>
                                 {{-- <th class="text-center">Aksi</th> --}}
                             </tr>
                         </thead>
@@ -240,6 +241,18 @@
                                         @else
                                             <span class="text-gray-400 text-xs">-</span>
                                         @endif
+                                    </td>
+
+                                    {{-- Kolom Aksi --}}
+                                    <td class="text-center">
+                                        <div class="tooltip tooltip-left md:tooltip-top" data-tip="Detail">
+                                            
+                                            <a href="{{ route('surat.show', $letter->id) }}" 
+                                            class="btn btn-sm btn-square bg-slate-100 text-primary-600 hover:bg-[#c4c4c4] !hover:text-red border-none shadow-sm transition-all duration-300 p-2">
+                                                <x-icons.magnifying-glass />
+                                            </a>
+                                            
+                                        </div>
                                     </td>
                                 </tr>
                             @empty

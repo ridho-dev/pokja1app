@@ -7,6 +7,7 @@ use App\Models\LetterType;
 use App\Models\Opd;
 use App\Models\Province;
 use App\Models\Regency;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -134,18 +135,35 @@ class SuratController extends Controller
             $letters->opds()->attach($pivotData);
         }
 
-        // Tambahkan masa PKS ke tabel OPD
-        // if ($request->letter_type_id == 22) {
-        //     $opd = Opd::find($request->opd_id);
-        //     if ($opd) {
-        //         $opd->update([
-        //             'start_date' => $request->start_date,
-        //             'end_date'   => $request->end_date,
-        //         ]);
-        //     }
-        // }
-
         return back()->with('success', 'Surat berhasil diupload!');
+    }
+
+    public function show($id)
+    {
+        // Cari surat beserta relasinya agar pemanggilan di Blade tidak memberatkan database
+        $letter = Letter::with(['letterType', 'opds.regency.province'])->findOrFail($id);
+        
+        return view('pages.detail-surat', compact('letter'));
+    }
+
+    public function viewFile($id)
+    {
+        $letter = Letter::findOrFail($id);
+
+        // 1. Cek keberadaan file
+        if (!Storage::disk('main_storage')->exists($letter->file_path)) {
+            abort(404, 'Maaf, File dokumen fisik tidak ditemukan di server.');
+        }
+
+        // 2. Ambil path absolut file di server (misal: C:/laragon/www/storage/...)
+        $fullPath = Storage::disk('main_storage')->path($letter->file_path);
+
+        // 3. Gunakan response()->file()
+        // Ini lebih eksplisit dan Intelephense tidak akan protes lagi
+        return response()->file($fullPath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $letter->file_name . '"'
+        ]);
     }
 
     public function getRegencies($provinceId)
