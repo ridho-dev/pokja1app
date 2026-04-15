@@ -146,6 +146,22 @@
             });
     }
 
+    // Fungsi untuk menghilangkan notifikasi upload sukses
+    document.addEventListener("DOMContentLoaded", function() {
+        const notification = document.getElementById("success-notification");
 
+        if (notification) {
+            // Tambahkan event listener ke seluruh dokumen (halaman)
+            document.addEventListener("click", function() {
+                // Efek memudar sebelum hilang (opsional, biar halus)
+                notification.style.opacity = '0';
+                
+                // Hapus elemen setelah transisi selesai (500ms)
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            }, { once: true }); // 'once: true' artinya event ini cuma jalan sekali lalu membuang dirinya sendiri (hemat memori)
+        }
+    });
 </script>
 @endsection

@@ -7,12 +7,14 @@ use App\Models\LetterType;
 use App\Models\Opd;
 use App\Models\Province;
 use App\Models\Regency;
+use App\Traits\FileUploadTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class MasukP2Controller extends Controller
 {
+    use FileUploadTrait;
     public function index()
     {
         
@@ -24,11 +26,13 @@ class MasukP2Controller extends Controller
         // Sementara: tidak semua types ditampilkan
         $types = LetterType::whereIn('id', [21, 22])->get(); 
 
-        return view('pages.upload-balasan-p2', compact('provinces', 'types'));
+        return view('pages.upload-masuk-p2', compact('provinces', 'types'));
     }
 
     public function store(Request $request)
     {
+        $letter_type_id = 21; // Surat masuk P2
+
         $request->validate([
             'letter_number'  => 'required|string|max:255',
             'letter_date'    => 'required|date',
@@ -52,21 +56,11 @@ class MasukP2Controller extends Controller
                 ->withInput() // Mengembalikan isian form agar user tidak perlu mengetik ulang
                 ->withErrors(['letter_number' => 'Gagal! Surat dengan Nomor dan tujuan OPD tersebut sudah pernah diunggah.']);
         }
-        $letter_type_id = 21; // Surat masuk P2
-        $type     = LetterType::findOrFail($letter_type_id);
-        $forbidden = ['/', '\\', ':', '*', '?', '"', '<', '>', '|'];
-        $folderType = str_replace($forbidden, '-', $type->letter_type);
-        $folderPath = "{$folderType}";
-
-        $file = $request->file('file_surat');
-        $originalName = $file->getClientOriginalName();
-        $storedFileName = $originalName;
-
-        $path = $file->storeAs($folderPath, $storedFileName, 'main_storage');
+        $fileData = $this->handleLetterUpload($request->file('file_surat'), $letter_type_id, $request->opd_id);
 
         $letters = Letter::create([
-            'file_path' => $path,
-            'file_name' => $originalName,
+            'file_path'      => $fileData['file_path'],
+            'file_name'      => $fileData['file_name'],
             'letter_type_id' => $letter_type_id,
             'letter_number' => $request->letter_number,
             'letter_date' => $request->letter_date,

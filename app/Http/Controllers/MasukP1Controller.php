@@ -7,12 +7,14 @@ use App\Models\LetterType;
 use App\Models\Opd;
 use App\Models\Province;
 use App\Models\Regency;
+use App\Traits\FileUploadTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class MasukP1Controller extends Controller
 {
+    use FileUploadTrait;
+
     public function index()
     {
         
@@ -51,7 +53,6 @@ class MasukP1Controller extends Controller
             (array) $request->opd_perpanjangan_id
         );
 
-
         $isDuplicate = Letter::where('letter_type_id', $letter_type_id)
             ->where('letter_number', $request->letter_number)
             ->whereHas('opds', function ($query) use ($allOpdIds) {
@@ -67,32 +68,12 @@ class MasukP1Controller extends Controller
                 ->withErrors(['letter_number' => 'Gagal! Surat dengan Nomor dan tujuan OPD tersebut sudah pernah diunggah.']);
         }
 
-        // Membangun struktur folder
-        // $province = Province::findOrFail($request->province_id);
-        // $regency  = Regency::findOrFail($request->regency_id);
-        // $opd      = Opd::findOrFail($request->opd_id);
-        $type     = LetterType::findOrFail($letter_type_id);
-
-        // // Membersihkan string
-        $forbidden = ['/', '\\', ':', '*', '?', '"', '<', '>', '|'];
-    
-        // $folderProv = str_replace($forbidden, '-', $province->name);
-        // $folderKab  = str_replace($forbidden, '-', $regency->name);
-        // $folderOpd  = str_replace($forbidden, '-', $opd->name);
-        $folderType = str_replace($forbidden, '-', $type->letter_type);
-
-        $folderPath = "{$folderType}";
-
-        $file = $request->file('file_surat');
-        $originalName = $file->getClientOriginalName();
-        $storedFileName = $originalName;
-
-        $path = $file->storeAs($folderPath, $storedFileName, 'main_storage');
+        $fileData = $this->handleLetterUpload($request->file('file_surat'), $letter_type_id, $allOpdIds);
 
 
         $letters = Letter::create([
-            'file_path' => $path,
-            'file_name' => $originalName,
+            'file_path' => $fileData['file_path'],
+            'file_name' => $fileData['file_name'],
             'kloter' => $request->kloter,
             'letter_type_id' => $letter_type_id,
             'letter_number' => $request->letter_number,
@@ -121,17 +102,6 @@ class MasukP1Controller extends Controller
         if (!empty($pivotData)) {
             $letters->opds()->attach($pivotData);
         }
-
-        // Tambahkan masa PKS ke tabel OPD
-        // if ($request->letter_type_id == 22) {
-        //     $opd = Opd::find($request->opd_id);
-        //     if ($opd) {
-        //         $opd->update([
-        //             'start_date' => $request->start_date,
-        //             'end_date'   => $request->end_date,
-        //         ]);
-        //     }
-        // }
 
         return back()->with('success', 'Surat berhasil diupload!');
     }
