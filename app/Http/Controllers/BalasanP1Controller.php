@@ -27,7 +27,7 @@ class BalasanP1Controller extends Controller
         // Sementara: tidak semua types ditampilkan
         $types = LetterType::whereIn('id', [11, 12])->get(); 
 
-        return view('pages.upload-balasan-p1', compact('provinces', 'types'));
+        return view('pages.uploads.upload-balasan-p1', compact('provinces', 'types'));
     }
 
     public function store(Request $request)

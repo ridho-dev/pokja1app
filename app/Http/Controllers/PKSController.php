@@ -19,7 +19,7 @@ class PKSController extends Controller
     public function create()
     {
         $provinces = Province::all();
-        return view('pages.upload-pks', compact('provinces'));
+        return view('pages.uploads.upload-pks', compact('provinces'));
     }
 
     public function store(Request $request)

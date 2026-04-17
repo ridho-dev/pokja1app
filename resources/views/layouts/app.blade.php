@@ -103,6 +103,10 @@
                                                 <a href="{{ route('users.index') }}">Manajemen User</a>
                                             </li>
                                         @endif
+                                        <li>
+                                                
+                                                <a href="{{ route('opd.create') }}">Manajemen OPD</a>
+                                            </li>
                                         <li><a href="#">Referensi</a></li>
                                         
                                     </ul>

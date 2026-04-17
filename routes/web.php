@@ -10,6 +10,7 @@ use App\Http\Controllers\MasukP2Controller;
 use App\Http\Controllers\BalasanP2Controller;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OpdController;
 
 // 1. Halaman Login 
 Route::middleware('guest')->group(function () {
@@ -71,15 +72,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/surat/{id}', [SuratController::class, 'show'])->name('surat.show');
     Route::get('/surat/{id}/view-file', [SuratController::class, 'viewFile'])->name('surat.file');
 
+    // Halaman Manajemen OPD
+    Route::get('/pages/manajemen-opd', [OpdController::class, 'create'])->name('opd.create');
+    Route::post('/pages/manajemen-opd', [OpdController::class, 'store'])->name('opd.store');
+    Route::get('/api/regencies/{province_id}', [OpdController::class, 'getRegencies']);
+    // Rute untuk mencari OPD serupa
+    Route::get('/api/opd/by-regency/{regency_id}', [OpdController::class, 'getOpdByRegency']); 
+
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
     // PEMBATASAN AKSES
     Route::middleware(['auth', 'admin'])->group(function () {
         // Menampilkan halaman tabel user
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
-        // Memproses data tambah user baru (dari Modal)
         Route::post('/users', [UserController::class, 'store'])->name('users.store');
-        // Menghapus user
         Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
         
     });

@@ -1,4 +1,4 @@
-@extends('layouts.app') {{-- Sesuaikan dengan layout Anda --}}
+@extends('layouts.app')
 
 @section('content')
 <div class="flex justify-center mt-0 mb-10">
