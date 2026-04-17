@@ -15,7 +15,8 @@ return new class extends Migration
             $table->foreignId('letter_id')
                     ->constrained('letters')
                     ->cascadeOnDelete();
-            $table->foreignId('opd_id')
+            $table->string('opd_id', 8)
+                    ->foreignId('opd_id')
                     ->constrained('opds')
                     ->cascadeOnDelete();
         });

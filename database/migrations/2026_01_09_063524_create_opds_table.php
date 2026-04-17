@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('opds', function (Blueprint $table) {
-            $table->id();
+            $table->string('id', 8)->primary();
             $table->foreignId('regency_id')->constrained('regencies');
             $table->string('name');
             $table->foreignId('created_by')

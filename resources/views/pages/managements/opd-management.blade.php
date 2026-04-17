@@ -130,6 +130,7 @@
     }
 
     function loadOpds(regencyId) {
+        console.log(regencyId)
         let listContainer = document.getElementById('existing_opd_list');
         // Ambil elemen input dan tombol
         let firstInput = document.getElementById('first_opd_input');

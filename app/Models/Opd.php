@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Opd extends Model
 {
     public $incrementing = false;
+    protected $keyType = 'string';
     
     protected $fillable = [
+        'id',
         'regency_id',
         'name',
         'created_by',
