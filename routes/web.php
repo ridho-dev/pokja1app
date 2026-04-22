@@ -11,6 +11,7 @@ use App\Http\Controllers\BalasanP2Controller;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OpdController;
+use App\Http\Controllers\ProfileController;
 
 // Halaman Login 
 Route::middleware('guest')->group(function () {
@@ -83,6 +84,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/opd/create', [OpdController::class, 'create'])->name('opd.create');
     Route::post('/opd', [OpdController::class, 'store'])->name('opd.store');
     Route::get('/opd/{id}', [OpdController::class, 'show'])->name('opd.show');
+
+
+    // Halaman Edit Profil
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 

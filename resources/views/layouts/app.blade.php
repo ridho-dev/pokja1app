@@ -98,13 +98,11 @@
                                         {{-- CEK ROLE SECARA LANGSUNG --}}
                                         @if(Auth::check() && Auth::user()->role->id === 1)
                                             <li>
-                                                
                                                 {{-- Masukkan route users.index di sini --}}
                                                 <a href="{{ route('users.index') }}">Manajemen User</a>
                                             </li>
                                         @endif
                                         <li>
-                                                
                                                 <a href="{{ route('opd.create') }}">Manajemen OPD</a>
                                             </li>
                                         <li><a href="#">Referensi</a></li>
@@ -125,8 +123,7 @@
                             </div>
                         </div>
                         <ul tabindex="0" class="menu dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 text-base-content rounded-box w-52 text-base">
-                            <li><a>Profil</a></li>
-                            <li><a>Ubah Password</a></li>
+                            <li><a href="{{ route('profile.edit') }}">Profil</a></li>
                             <div class="divider my-0"></div>
                             <li>
                                 <a onclick="event.preventDefault(); this.nextElementSibling.submit();"
@@ -235,8 +232,7 @@
                     <details>
                         <summary class="text-base font-medium">Akun Saya</summary>
                         <ul class="text-base">
-                            <li><a>Profil</a></li>
-                            <li><a>Ubah Password</a></li>
+                            <li><a href="{{ route('profile.edit') }}">Profil</a></li>
                             <li>
                                 <a onclick="event.preventDefault(); this.nextElementSibling.submit();"
                                     class="text-red-600 font-bold cursor-pointer">
@@ -254,11 +250,6 @@
         </div>
     </div>
 
-    {{-- 
-        Interaksi menu
-        1. Menutup menu lain saat satu menu dibuka.
-        2. Menutup semua menu saat klik di luar area navbar.
-    --}}
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const navDropdowns = document.querySelectorAll("details.nav-dropdown");
