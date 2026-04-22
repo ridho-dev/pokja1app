@@ -16,19 +16,16 @@ class SuratController extends Controller
 {
     public function index()
     {
-        // Mengambil data surat beserta relasinya
         $letters = Letter::with(['opds', 'letterType', 'uploader'])
                         ->latest()
                         ->paginate(10);
 
-        // Mengarahkan ke file blade (pastikan lokasinya sesuai)
         return view('pages.daftar-surat-p1', compact('letters'));
     }
 
     public function create() 
     {
         $provinces = Province::all();
-        // Sementara: tidak semua types ditampilkan
         $types = LetterType::whereIn('id', [11, 12])->get(); 
 
         return view('pages.upload', compact('provinces', 'types'));
@@ -60,13 +57,11 @@ class SuratController extends Controller
         $isDuplicate = Letter::where('letter_type_id', $request->letter_type_id)
             ->where('letter_number', $request->letter_number)
             ->whereHas('opds', function ($query) use ($allOpdIds) {
-                // Mengecek duplikasi ke gabungan ID OPD
                 $query->whereIn('opds.id', $allOpdIds);
             })
             ->exists(); // mengembalikan nilai true jika data ditemukan
 
         if ($isDuplicate) {
-            // Jika duplikat, kembalikan user ke form dengan pesan error
             return back()
                 ->withInput() // Mengembalikan isian form agar user tidak perlu mengetik ulang
                 ->withErrors(['letter_number' => 'Gagal! Surat dengan Nomor dan tujuan OPD tersebut sudah pernah diunggah.']);
@@ -77,19 +72,8 @@ class SuratController extends Controller
             $rules['start_date'] = 'required|date';
             $rules['end_date']   = 'required|date|after_or_equal:start_date';
         }
-
-        // Membangun struktur folder
-        // $province = Province::findOrFail($request->province_id);
-        // $regency  = Regency::findOrFail($request->regency_id);
-        // $opd      = Opd::findOrFail($request->opd_id);
         $type     = LetterType::findOrFail($request->letter_type_id);
-
-        // // Membersihkan string
         $forbidden = ['/', '\\', ':', '*', '?', '"', '<', '>', '|'];
-    
-        // $folderProv = str_replace($forbidden, '-', $province->name);
-        // $folderKab  = str_replace($forbidden, '-', $regency->name);
-        // $folderOpd  = str_replace($forbidden, '-', $opd->name);
         $folderType = str_replace($forbidden, '-', $type->letter_type);
 
         $folderPath = "{$folderType}";
@@ -99,7 +83,6 @@ class SuratController extends Controller
         $storedFileName = $originalName;
 
         $path = $file->storeAs($folderPath, $storedFileName, 'main_storage');
-
 
         $letters = Letter::create([
             'file_path' => $path,
@@ -116,21 +99,21 @@ class SuratController extends Controller
 
         $pivotData = [];
 
-        // 1. Masukkan OPD Izin Baru (ID Tipe = 1)
+        // OPD Izin Baru (ID Tipe = 1)
         if ($request->has('opd_baru_id') && is_array($request->opd_baru_id)) {
             foreach ($request->opd_baru_id as $opdId) {
                 $pivotData[$opdId] = ['p1_type_id' => 1]; 
             }
         }
 
-        // 2. Masukkan OPD Perpanjangan (ID Tipe = 2)
+        // OPD Perpanjangan (ID Tipe = 2)
         if ($request->has('opd_perpanjangan_id') && is_array($request->opd_perpanjangan_id)) {
             foreach ($request->opd_perpanjangan_id as $opdId) {
                 $pivotData[$opdId] = ['p1_type_id' => 2]; 
             }
         }
 
-        //Simpan ke database
+        // Simpan ke database
         if (!empty($pivotData)) {
             $letters->opds()->attach($pivotData);
         }
@@ -140,26 +123,24 @@ class SuratController extends Controller
 
     public function show($id)
     {
-        // Cari surat beserta relasinya agar pemanggilan di Blade tidak memberatkan database
         $letter = Letter::with(['letterType', 'opds.regency.province'])->findOrFail($id);
         
-        return view('pages.detail-surat', compact('letter'));
+        return view('pages.details.detail-surat', compact('letter'));
     }
 
     public function viewFile($id)
     {
         $letter = Letter::findOrFail($id);
 
-        // 1. Cek keberadaan file
+        // Cek keberadaan file
         if (!Storage::disk('main_storage')->exists($letter->file_path)) {
             abort(404, 'Maaf, File dokumen fisik tidak ditemukan di server.');
         }
 
-        // 2. Ambil path absolut file di server (misal: C:/laragon/www/storage/...)
+        // Mengambil path absolut file di server (misal: C:/laragon/www/storage/...)
         $fullPath = Storage::disk('main_storage')->path($letter->file_path);
 
-        // 3. Gunakan response()->file()
-        // Ini lebih eksplisit dan Intelephense tidak akan protes lagi
+        // Gunakan response()->file()
         return response()->file($fullPath, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $letter->file_name . '"'

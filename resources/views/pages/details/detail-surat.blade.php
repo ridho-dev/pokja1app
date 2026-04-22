@@ -1,25 +1,23 @@
-@extends('layouts.app') {{-- Sesuaikan dengan nama layout utama Anda --}}
+@extends('layouts.app')
 
 @section('content')
 <div class="flex justify-center mt-0 mb-10">
-    {{-- Pembungkus utama konten (Sama persis dengan dashboard Anda) --}}
     <div class="w-full max-w-screen-xl px-4 md:px-0 flex flex-col gap-4">
-        
-        {{-- 1. AREA HEADER (Judul Kiri, Tombol Kanan) --}}
+        {{-- AREA HEADER --}}
         <div class="flex items-center justify-between mt-4 mb-2">
-            <h2 class="text-2xl font-bold text-[#102C57]">{{ $letter->file_name }}</h2>
+            <h2 class="text-2xl font-bold text-[#102C57]">{{ preg_replace('/^\d{8}_\d{6}\s/', '', $letter->file_name) }}</h2>
+            
             <button onclick="history.back()" class="btn btn-sm btn-outline border-gray-300">
                 &larr; Kembali
             </button>
         </div>
 
-        {{-- 2. BAGIAN GRID LAYOUT --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="md:col-span-2 flex flex-col">
                 
-                {{-- AREA 2: View Dokumen --}}
+                {{-- View Dokumen --}}
                 <div class="card w-full bg-base-100 shadow-sm border border-gray-200 flex-grow min-h-[650px] flex flex-col overflow-hidden">
-                    {{-- LOGIKA VIEWER (Ditaruh langsung di bawah card, tanpa div tambahan) --}}
+                    {{-- LOGIKA DOC VIEWER (Ditaruh langsung di bawah card, tanpa div tambahan) --}}
                     @php
                         $extension = strtolower(pathinfo($letter->file_path, PATHINFO_EXTENSION));
                         $fileUrl = route('surat.file', $letter->id);
@@ -44,12 +42,12 @@
                             </div>
                         @endif
                     </div>
-                </div> {{-- End Card Viewer --}}
-            </div> {{-- End Sisi Kiri (Col-span-2) --}}
+                </div> 
+            </div> 
 
             <div class="md:col-span-1 flex flex-col gap-4">
                 
-                {{-- AREA 3: Detail Informasi Surat --}}
+                {{-- Detail Informasi Surat --}}
                 <div class="card w-full bg-base-100 shadow-sm border border-gray-200">
                     <div class="card-body p-5">
                         <h3 class="card-title text-base text-[#102C57] border-b pb-2 mb-2">Informasi Surat</h3>
@@ -98,7 +96,7 @@
                     </div>
                 </div>
 
-                {{-- AREA 4: Daftar OPD --}}
+                {{-- Daftar OPD --}}
                 <div class="card w-full bg-base-100 shadow-sm border border-gray-200">
                     <div class="card-body p-5">
                         <h3 class="card-title text-base text-[#102C57] border-b pb-2 mb-2">Tujuan OPD</h3>
@@ -141,7 +139,7 @@
                     </div>
                 </div>
 
-                {{-- AREA 5: Informasi Sistem --}}
+                {{-- Informasi Sistem --}}
                 <div class="card w-full bg-base-100 shadow-sm border border-gray-200">
                     <div class="card-body p-5">
                         <h3 class="card-title text-base text-[#102C57] border-b pb-2 mb-2">Sistem</h3>

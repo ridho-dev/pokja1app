@@ -28,4 +28,9 @@ class Opd extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function letters()
+    {
+        return $this->belongsToMany(Letter::class, 'letter_opd', 'opd_id', 'letter_id');
+    }
 }

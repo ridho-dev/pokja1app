@@ -12,18 +12,17 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OpdController;
 
-// 1. Halaman Login 
+// Halaman Login 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'index'])->name('login');
     Route::post('/login', [LoginController::class, 'authenticate'])->name('login.post');
-    
     // Redirect root '/' ke login jika belum login
     Route::get('/', function () {
         return redirect()->route('login');
     });
 });
 
-// 2. Halaman untuk user yang sudah login
+// Halaman untuk user yang sudah login
 Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -78,6 +77,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/regencies/{province_id}', [OpdController::class, 'getRegencies']);
     // Rute untuk mencari OPD serupa
     Route::get('/api/opd/by-regency/{regency_id}', [OpdController::class, 'getOpdByRegency']); 
+
+    // Halaman Detail OPD
+    Route::get('/opd', [OpdController::class, 'index'])->name('opd.index');
+    Route::get('/opd/create', [OpdController::class, 'create'])->name('opd.create');
+    Route::post('/opd', [OpdController::class, 'store'])->name('opd.store');
+    Route::get('/opd/{id}', [OpdController::class, 'show'])->name('opd.show');
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 

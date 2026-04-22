@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Province;
 use App\Models\Regency;
 use App\Models\Opd;
+use App\Models\Letter;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -68,6 +70,56 @@ class OpdController extends Controller
         }
 
         return redirect()->route('opd.create')->with('success', "Sebanyak {$berhasilDisimpan} Instansi OPD berhasil ditambahkan ke database.");
+    }
+
+    public function show($id)
+    {
+        $opd = Opd::with(['regency.province'])->findOrFail($id);
+        
+        $semuaSurat = $opd->letters()->latest()->get();
+        $totalDokumen = $semuaSurat->count();
+
+        $suratP2 = $semuaSurat->where('letter_type_id', 23)->first();
+
+        $statusOpd = 'Belum Aktif';
+        $startDate = '-';
+        $endDate   = '-';
+
+        if ($suratP2 && $suratP2->start_date && $suratP2->end_date) {
+            $mulai = Carbon::parse($suratP2->start_date);
+            $akhir = Carbon::parse($suratP2->end_date);
+            $hariIni = Carbon::now();
+
+            $startDate = $mulai->translatedFormat('d F Y');
+            $endDate   = $akhir->translatedFormat('d F Y');
+
+            if ($hariIni->between($mulai, $akhir)) {
+                $statusOpd = 'Aktif';
+            } elseif ($hariIni->greaterThan($akhir)) {
+                $statusOpd = 'Tidak Aktif';
+            }
+        }
+
+        $namaJenisSurat = [
+            11  => 'Surat Masuk P1',
+            12  => 'Surat Balasan P1',
+            21  => 'Surat Masuk P2',
+            22  => 'Surat Balasan P2',
+            23  => 'Perjanjian Kerja Sama'
+        ];
+
+        $groupedLetters = $semuaSurat->groupBy('letter_type_id')->sortKeys();
+
+        // Lempar data ke Blade
+        return view('pages.details.detail-opd', compact(
+            'opd', 
+            'totalDokumen', 
+            'statusOpd', 
+            'startDate', 
+            'endDate', 
+            'groupedLetters',
+            'namaJenisSurat'
+        ));
     }
 
     public function getRegencies($provinceId)
