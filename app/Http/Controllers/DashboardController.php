@@ -24,6 +24,19 @@ class DashboardController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('dashboard', compact('totalSurat', 'totalIzinBaru', 'totalPerpanjangan', 'letters'));
+        $recentActivities = Letter::with(['user', 'opds.regency'])
+                              ->latest()
+                              ->take(5)
+                              ->get();
+
+        $namaJenisSurat = [
+            11  => 'Surat Masuk P1',
+            12  => 'Surat Balasan P1',
+            21  => 'Surat Masuk P2',
+            22  => 'Surat Balasan P2',
+            23  => 'Perjanjian Kerja Sama'
+        ];
+
+        return view('dashboard', compact('totalSurat', 'totalIzinBaru', 'totalPerpanjangan', 'letters', 'recentActivities', 'namaJenisSurat'));
     }
 }

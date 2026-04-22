@@ -78,4 +78,10 @@ class Letter extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    public function user()
+    {
+        // Sesuaikan 'created_by' dengan nama kolom di database surat Anda
+        return $this->belongsTo(User::class, 'created_by'); 
+    }
 }

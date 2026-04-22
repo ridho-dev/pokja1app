@@ -74,24 +74,54 @@
                 </div>
 
                 <div class="md:col-span-1">
-                    
                     <div class="card w-full bg-base-100 shadow-xl border border-gray-200 h-full">
                         <div class="card-body">
                             <h3 class="card-title text-primary text-lg">Aktivitas Terbaru</h3>
                             
                             <ul class="mt-4 space-y-4">
-                                <li class="text-sm">
-                                    <span class="font-bold text-[#102C57]">System</span> menambah surat P1.
-                                    <div class="text-xs text-gray-400 mt-1">5 menit yang lalu</div>
-                                </li>
-                                <li class="text-sm">
-                                    <span class="font-bold text-[#102C57]">Admin</span> menghapus surat balasan P2.
-                                    <div class="text-xs text-gray-400 mt-1">1 jam yang lalu</div>
-                                </li>
+                                @forelse($recentActivities as $surat)
+                                    @php
+                                        // 1. Tentukan Nama Jenis Surat
+                                        // Jika ID tidak ditemukan di array, tampilkan 'Dokumen Baru'
+                                        $jenisSurat = $namaJenisSurat[$surat->letter_type_id] ?? 'Dokumen Baru';
+
+                                        // 2. Tentukan Nama Wilayah (Kabupaten/OPD)
+                                        $namaWilayah = '';
+                                        if ($surat->opds->isNotEmpty()) {
+                                            // Ambil OPD pertama dari surat ini
+                                            $opdPertama = $surat->opds->first();
+                                            
+                                            // Ambil nama regency (Kabupaten). Jika tidak ada, fallback ke nama OPD
+                                            $rawWilayah = $opdPertama->regency->name ?? $opdPertama->name;
+                                            
+                                            // Ubah KABUPATEN TOBA menjadi Kabupaten Toba agar lebih rapi
+                                            $namaWilayah = ucwords(strtolower($rawWilayah)); 
+                                        }
+                                    @endphp
+
+                                    <li class="text-sm">
+                                        {{-- Nama User --}}
+                                        <span class="font-bold text-[#102C57]">
+                                            {{ $surat->user->name ?? 'System' }}
+                                        </span> 
+                                        
+                                        {{-- Teks Aktivitas (menambah Surat Balasan P1 Kabupaten Toba) --}}
+                                        menambah 
+                                        <span class="font-medium text-gray-800">
+                                            {{ $jenisSurat }} {{ $namaWilayah }}
+                                        </span>.
+                                        
+                                        {{-- Waktu --}}
+                                        <div class="text-xs text-gray-400 mt-1">
+                                            {{ $surat->created_at->diffForHumans() }}
+                                        </div>
+                                    </li>
+                                @empty
+                                    <li class="text-sm text-gray-400 italic">Belum ada aktivitas penambahan dokumen.</li>
+                                @endforelse
                             </ul>
                         </div>
                     </div>
-
                 </div>
                 
             </div>
