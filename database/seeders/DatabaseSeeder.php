@@ -47,10 +47,90 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Pegawai IDKD',
-            'username' => 'Pegawai',
-            'password' => Hash::make('pegawai123'),
-            'nip' => '999999999999999999',
+            'name' => 'Ridho Steven Paian Pardede',
+            'username' => 'ridho',
+            'password' => Hash::make('12345678'),
+            'nip' => '200108272025041001',
+            'role_id' => $rolePegawai->id,
+            'is_active' => true,
+            'created_by' => 1, 
+        ]);
+
+        User::create([
+            'name' => 'Fahriza Amirul Hakim',
+            'username' => 'fahriza',
+            'password' => Hash::make('12345678'),
+            'nip' => '199905022022081001',
+            'role_id' => $rolePegawai->id,
+            'is_active' => true,
+            'created_by' => 1, 
+        ]);
+
+        User::create([
+            'name' => 'AA Azhari',
+            'username' => 'ari',
+            'password' => Hash::make('12345678'),
+            'nip' => '198611012010121001',
+            'role_id' => $rolePegawai->id,
+            'is_active' => true,
+            'created_by' => 1, 
+        ]);
+
+        User::create([
+            'name' => 'Yuning Sri Harjanti',
+            'username' => 'yuning',
+            'password' => Hash::make('12345678'),
+            'nip' => '197106031996032001',
+            'role_id' => $rolePegawai->id,
+            'is_active' => true,
+            'created_by' => 1, 
+        ]);
+
+        User::create([
+            'name' => 'Martina Elisabet Br Situmorang',
+            'username' => 'martina',
+            'password' => Hash::make('12345678'),
+            'nip' => '198710092009122001',
+            'role_id' => $rolePegawai->id,
+            'is_active' => true,
+            'created_by' => 1, 
+        ]);
+
+        User::create([
+            'name' => 'Noer Endah Islami',
+            'username' => 'endah',
+            'password' => Hash::make('12345678'),
+            'nip' => '199312052020122016',
+            'role_id' => $rolePegawai->id,
+            'is_active' => true,
+            'created_by' => 1, 
+        ]);
+
+        User::create([
+            'name' => 'Ratu Nur Asyifa',
+            'username' => 'ratu',
+            'password' => Hash::make('12345678'),
+            'nip' => '199503232025212023',
+            'role_id' => $rolePegawai->id,
+            'is_active' => true,
+            'created_by' => 1, 
+        ]);
+
+        User::create([
+            'name' => 'Irma Suci Soraya',
+            'username' => 'irma',
+            'password' => Hash::make('12345678'),
+            'nip' => '198411012025212017',
+            'role_id' => $rolePegawai->id,
+            'is_active' => true,
+            'created_by' => 1, 
+        ]);
+
+        User::create([
+            'name' => 'Wisnu Adi Nugroho',
+            'username' => 'wisnu',
+            'password' => Hash::make('12345678'),
+            'nip' => '197802272001121001',
             'role_id' => $rolePegawai->id,
             'is_active' => true,
             'created_by' => 1, 
