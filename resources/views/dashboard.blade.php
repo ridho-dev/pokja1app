@@ -64,9 +64,10 @@
 
                     <div class="card w-full bg-base-100 shadow-xl border border-gray-200 flex-grow">
                         <div class="card-body">
-                            <h3 class="card-title text-[#102C57] text-lg">Grafik atau Tabel Data</h3>
-                            <div class="mt-4 h-48 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center text-gray-400">
-                                Area Konten Bawah
+                            <h3 class="card-title text-[#102C57] text-lg">Grafik Data P1</h3>
+                            <div class="mt-4 relative h-72 w-full flex items-center justify-center">
+                                {{-- KANVAS GRAFIK WAJIB ADA DI SINI --}}
+                                <canvas id="grafikKloter"></canvas>
                             </div>
                         </div>
                     </div>
@@ -102,7 +103,7 @@
                                     <li class="text-sm">
                                         {{-- Nama User --}}
                                         <span class="font-bold text-[#102C57]">
-                                            {{ $surat->user->name ?? 'System' }}
+                                            {{ $surat->uploader->name ?? 'System' }}
                                         </span> 
                                         
                                         {{-- Teks Aktivitas (menambah Surat Balasan P1 Kabupaten Toba) --}}
@@ -284,4 +285,61 @@
             </div>
         </div>
     </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    const ctx = document.getElementById('grafikKloter').getContext('2d');
+    
+    // Ambil rincian dinamis dari PHP
+    const rincianDinamis = {!! json_encode($typeDetails ?? []) !!};
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($labels ?? []) !!}, 
+            datasets: [{
+                label: 'Total Surat',
+                data: {!! json_encode($dataTotal ?? []) !!},
+                backgroundColor: '#102C57',
+                borderRadius: 6,
+                borderWidth: 0,
+                hoverBackgroundColor: '#1a4585' 
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(16, 44, 87, 0.95)',
+                    padding: 12,
+                    callbacks: {
+                        label: function(context) {
+                            let dataIndex = context.dataIndex;
+                            let total = context.raw;
+                            
+                            // Awali dengan Total
+                            let tooltipLines = ['Total : ' + total + ' Surat'];
+
+                            // Tambahkan baris untuk setiap jenis izin yang ada di database secara otomatis
+                            Object.keys(rincianDinamis).forEach(function(key) {
+                                let label = rincianDinamis[key].label;
+                                let nilai = rincianDinamis[key].data[dataIndex];
+                                tooltipLines.push('• ' + label + ': ' + nilai);
+                            });
+
+                            return tooltipLines;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+});
+</script>
 @endsection

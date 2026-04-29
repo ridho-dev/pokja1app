@@ -37,8 +37,8 @@
                             <tr>
                                 <th class="w-10 text-center">No</th>
                                 <th>Nama Pegawai</th>
-                                <th>Username</th>
                                 <th>NIP</th>
+                                <th>Username</th>
                                 <th>Peran (Role)</th>
                                 <th class="text-center w-24">Aksi</th>
                             </tr>
