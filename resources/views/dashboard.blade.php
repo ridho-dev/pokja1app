@@ -320,7 +320,7 @@
                             let total = context.raw;
                             
                             // Awali dengan Total
-                            let tooltipLines = ['Total : ' + total + ' Surat'];
+                            let tooltipLines = ['Total : ' + total + ' OPD'];
 
                             // Tambahkan baris untuk setiap jenis izin yang ada di database secara otomatis
                             Object.keys(rincianDinamis).forEach(function(key) {

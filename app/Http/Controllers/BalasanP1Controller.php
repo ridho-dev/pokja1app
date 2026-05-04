@@ -105,17 +105,6 @@ class BalasanP1Controller extends Controller
             $letters->opds()->attach($pivotData);
         }
 
-        // Tambahkan masa PKS ke tabel OPD
-        // if ($request->letter_type_id == 22) {
-        //     $opd = Opd::find($request->opd_id);
-        //     if ($opd) {
-        //         $opd->update([
-        //             'start_date' => $request->start_date,
-        //             'end_date'   => $request->end_date,
-        //         ]);
-        //     }
-        // }
-
         return back()->with('success', 'Surat berhasil diupload!');
     }
 

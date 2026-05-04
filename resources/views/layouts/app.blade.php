@@ -103,8 +103,15 @@
                                             </li>
                                         @endif
                                         <li>
-                                                <a href="{{ route('opd.create') }}">Manajemen OPD</a>
+                                            <a href="{{ route('opd.create') }}">Manajemen OPD</a>
+                                        </li>
+                                        {{-- CEK ROLE SECARA LANGSUNG --}}
+                                        @if(Auth::check() && Auth::user()->role->id === 1)
+                                            <li>
+                                                {{-- Masukkan route users.index di sini --}}
+                                                <a href="{{ route('users.index') }}">Ekspor & Impor Data</a>
                                             </li>
+                                        @endif
                                         <li><a href="#">Referensi</a></li>
                                         
                                     </ul>
@@ -218,9 +225,23 @@
                     <details>
                         <summary class="text-base font-medium">Pengaturan</summary>
                         <ul class="text-base">
-                            @can('manage-users')
-                                <li><a href="#">Manajemen User</a></li>
-                            @endcan
+                            {{-- CEK ROLE SECARA LANGSUNG --}}
+                            @if(Auth::check() && Auth::user()->role->id === 1)
+                                <li>
+                                    {{-- Masukkan route users.index di sini --}}
+                                    <a href="{{ route('users.index') }}">Manajemen User</a>
+                                </li>
+                            @endif
+                            <li>
+                                <a href="{{ route('opd.create') }}">Manajemen OPD</a>
+                            </li>
+                            {{-- CEK ROLE SECARA LANGSUNG --}}
+                            @if(Auth::check() && Auth::user()->role->id === 1)
+                                <li>
+                                    {{-- Masukkan route users.index di sini --}}
+                                    <a href="{{ route('database.index') }}">Ekspor & Impor Data</a>
+                                </li>
+                            @endif
                             <li><a href="#">Referensi</a></li>
                         </ul>
                     </details>

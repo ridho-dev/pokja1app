@@ -12,6 +12,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OpdController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DatabaseController;
 
 // Halaman Login 
 Route::middleware('guest')->group(function () {
@@ -99,6 +100,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/users', [UserController::class, 'store'])->name('users.store');
         Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
         
+        Route::get('/database', [DatabaseController::class, 'index'])->name('database.index');
+        Route::post('/database/export', [DatabaseController::class, 'export'])->name('database.export');
+        Route::post('/database/import', [DatabaseController::class, 'import'])->name('database.import');
     });
 });
 

@@ -52,6 +52,7 @@ class DashboardController extends Controller
             ->join('letter_opd', 'letters.id', '=', 'letter_opd.letter_id')
             ->selectRaw($selectQuery)
             ->whereNotNull('letters.kloter')
+            ->where('letters.letter_type_id', 12)
             ->groupBy('letters.kloter')
             ->get()
             ->keyBy('kloter');
