@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Letter;
+use App\Models\ActivityLog;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,10 +25,15 @@ class DashboardController extends Controller
             ->latest()
             ->paginate(10);
 
-        $recentActivities = Letter::with(['uploader', 'opds.regency'])
-                              ->latest()
-                              ->take(5)
-                              ->get();
+        // $recentActivities = Letter::with(['uploader', 'opds.regency'])
+        //                       ->latest()
+        //                       ->take(5)
+        //                       ->get();
+        
+        $recentActivities = ActivityLog::with(['user', 'activityType', 'letterType', 'regency'])
+            ->latest()
+            ->take(5) // Ambil 5 aktivitas terbaru
+            ->get();
 
         $namaJenisSurat = [
             11  => 'Surat Masuk P1',

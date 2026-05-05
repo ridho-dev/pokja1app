@@ -80,45 +80,36 @@
                             <h3 class="card-title text-primary text-lg">Aktivitas Terbaru</h3>
                             
                             <ul class="mt-4 space-y-4">
-                                @forelse($recentActivities as $surat)
+                                @forelse($recentActivities as $log)
                                     @php
-                                        // 1. Tentukan Nama Jenis Surat
-                                        // Jika ID tidak ditemukan di array, tampilkan 'Dokumen Baru'
-                                        $jenisSurat = $namaJenisSurat[$surat->letter_type_id] ?? 'Dokumen Baru';
-
-                                        // 2. Tentukan Nama Wilayah (Kabupaten/OPD)
+                                        // Jenis Surat
+                                        $jenisSurat = $log->letterType->letter_type ?? 'Dokumen';
+                                        // Wilayah
                                         $namaWilayah = '';
-                                        if ($surat->opds->isNotEmpty()) {
-                                            // Ambil OPD pertama dari surat ini
-                                            $opdPertama = $surat->opds->first();
-                                            
-                                            // Ambil nama regency (Kabupaten). Jika tidak ada, fallback ke nama OPD
-                                            $rawWilayah = $opdPertama->regency->name ?? $opdPertama->name;
-                                            
-                                            // Ubah KABUPATEN TOBA menjadi Kabupaten Toba agar lebih rapi
-                                            $namaWilayah = ucwords(strtolower($rawWilayah)); 
+                                        if ($log->regency) {
+                                            $namaWilayah = ucwords(strtolower($log->regency->name)); 
                                         }
+                                        // Aktivitas
+                                        $kataKerja = strtolower($log->activityType->activity_type ?? 'memproses');
                                     @endphp
 
                                     <li class="text-sm">
                                         {{-- Nama User --}}
                                         <span class="font-bold text-[#102C57]">
-                                            {{ $surat->uploader->name ?? 'System' }}
+                                            {{ $log->user->name ?? 'System' }}
                                         </span> 
-                                        
-                                        {{-- Teks Aktivitas (menambah Surat Balasan P1 Kabupaten Toba) --}}
-                                        menambah 
+                                        {{-- Aktivitas --}}
+                                        {{ $kataKerja }} 
                                         <span class="font-medium text-gray-800">
-                                            {{ $jenisSurat }} {{ $namaWilayah }}
+                                            {{ $jenisSurat }} {{ $namaWilayah}}
                                         </span>.
-                                        
                                         {{-- Waktu --}}
                                         <div class="text-xs text-gray-400 mt-1">
-                                            {{ $surat->created_at->diffForHumans() }}
+                                            {{ $log->created_at->diffForHumans() }}
                                         </div>
                                     </li>
                                 @empty
-                                    <li class="text-sm text-gray-400 italic">Belum ada aktivitas penambahan dokumen.</li>
+                                    <li class="text-sm text-gray-400 italic">Belum ada aktivitas di sistem.</li>
                                 @endforelse
                             </ul>
                         </div>

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Letter;
-use App\Models\LetterType;
 use App\Models\Opd;
 use App\Models\Province;
 use App\Models\Regency;
+use App\Models\ActivityLog;
 use App\Traits\FileUploadTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,6 +46,25 @@ class PKSController extends Controller
 
         $letters->opds()->attach($request->opd);
 
+        $logRegencyId = null;
+        if (!empty($allOpdIds)) {
+            $firstOpdId = current($allOpdIds); 
+            $firstOpd = \App\Models\Opd::find($firstOpdId);
+            if ($firstOpd) {
+                $logRegencyId = $firstOpd->regency_id; 
+            }
+        }
+
+        // ==========================================
+        // SAVE USER ACTIVITY LOG
+        // ==========================================
+        ActivityLog::create([
+            'user_id'          => Auth::id(),
+            'activity_type_id' => 1, // 1 = "membuat"
+            'letter_type_id'   => $letter_type_id,
+            'letter_id'        => $letters->id,
+            'regency_id'       => $logRegencyId,
+        ]);
 
         return redirect()->back()->with('success', 'Data PKS berhasil diunggah!');
     }

@@ -7,6 +7,7 @@ use App\Models\LetterType;
 use App\Models\Opd;
 use App\Models\Province;
 use App\Models\Regency;
+use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -211,6 +212,20 @@ class SuratController extends Controller
         
         $letter->save();
 
+        $logRegencyId = null;
+        $firstOpd = $letter->opds->first();
+        if ($firstOpd) {
+            $logRegencyId = $firstOpd->regency_id;
+        }
+
+        ActivityLog::create([
+            'user_id'          => Auth::id(),
+            'activity_type_id' => 2, // 2 = mengubah
+            'letter_type_id'   => $letter->letter_type_id,
+            'letter_id'        => $letter->id,
+            'regency_id'       => $logRegencyId,
+        ]);
+
         return redirect()->route('surat.show', $letter->id)
                          ->with('success', 'Data surat berhasil diperbarui.');
     }
@@ -225,11 +240,29 @@ class SuratController extends Controller
             Storage::disk('main_storage')->delete($letter->file_path);
         }
 
+        // Save data info before deleted
+        $logLetterId = $letter->id;
+        $logLetterTypeId = $letter->letter_type_id;
+        $logRegencyId = null;
+
+        $firstOpd = $letter->opds->first();
+        if ($firstOpd) {
+            $logRegencyId = $firstOpd->regency_id;
+        }
+
         // Delete pivot relation 
         $letter->opds()->detach();
 
         // Delete data
         $letter->delete();
+
+        ActivityLog::create([
+            'user_id'          => Auth::id(),
+            'activity_type_id' => 3, // 3 = menghapus
+            'letter_type_id'   => $logLetterTypeId,
+            'letter_id'        => $logLetterId, 
+            'regency_id'       => $logRegencyId,
+        ]);
 
         return redirect()->route('surat.index')
                          ->with('success', 'Dokumen surat berhasil dihapus secara permanen.');
