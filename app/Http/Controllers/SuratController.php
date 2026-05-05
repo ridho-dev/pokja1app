@@ -10,10 +10,15 @@ use App\Models\Regency;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+
+use App\Traits\FileUploadTrait;
 
 class SuratController extends Controller
 {
+    use FileUploadTrait;
+
     public function index()
     {
         $letters = Letter::with(['opds', 'letterType', 'uploader'])
@@ -145,6 +150,89 @@ class SuratController extends Controller
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $letter->file_name . '"'
         ]);
+    }
+
+    public function edit($id)
+    {
+        $letter = Letter::findOrFail($id);
+
+        return view('pages.managements.letter-update', compact('letter'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $letter = Letter::findOrFail($id);
+
+        // Form input validation
+        $request->validate([
+            'letter_number' => 'required|string|max:255',
+            'letter_date'   => 'required|date',
+            'kloter'        => 'nullable|integer',
+            'information'   => 'nullable|string',
+            'file'          => 'nullable|file|mimes:pdf|max:5120', // Maksimal 5MB
+        ]);
+
+        // Update File
+        // File name wont be updated; will stay same when it was created
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            
+            // Old file path
+            $oldFilePath = $letter->file_path;
+            $oldFileName = $letter->file_name;
+            
+            // Old folder path
+            $folderPath = dirname($oldFilePath);
+            
+            $extension = $file->getClientOriginalExtension();
+            $nameWithoutExt = pathinfo($oldFileName, PATHINFO_FILENAME);
+            $newFileName = $nameWithoutExt . '.' . $extension;
+
+            // Delete old docs
+            if ($oldFilePath && Storage::disk('main_storage')->exists($oldFilePath)) {
+                Storage::disk('main_storage')->delete($oldFilePath);
+            }
+
+            $path = $file->storeAs($folderPath, $newFileName, 'main_storage');
+            
+            // Update database
+            $letter->file_path = $path;
+            $letter->file_name = $newFileName;
+        }
+
+        // Data update process
+        $letter->letter_number = $request->letter_number;
+        $letter->letter_date   = $request->letter_date;
+        $letter->kloter        = $request->kloter;
+        $letter->information   = $request->information;
+
+        // User who updated the letter
+        $letter->updated_by = Auth::id(); 
+        
+        $letter->save();
+
+        return redirect()->route('surat.show', $letter->id)
+                         ->with('success', 'Data surat berhasil diperbarui.');
+    }
+
+    public function destroy($id)
+    {
+        // Find surat by Id
+        $letter = Letter::findOrFail($id);
+
+        // Delete if Exist
+        if ($letter->file_path && Storage::disk('main_storage')->exists($letter->file_path)) {
+            Storage::disk('main_storage')->delete($letter->file_path);
+        }
+
+        // Delete pivot relation 
+        $letter->opds()->detach();
+
+        // Delete data
+        $letter->delete();
+
+        return redirect()->route('surat.index')
+                         ->with('success', 'Dokumen surat berhasil dihapus secara permanen.');
     }
 
     public function getRegencies($provinceId)

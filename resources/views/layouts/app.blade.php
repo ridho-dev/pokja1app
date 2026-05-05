@@ -6,16 +6,17 @@
     <title>@yield('title', 'Aplikasi Pokja')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-    /* Menyesuaikan wadah utama Tom Select (untuk kolom select yg pakai TS) */
+    /* Adjustment for Tom Select  */
     .ts-control {
-        min-height: 2.5rem !important; /* Tinggi sama persis dengan input DaisyUI */
+        /* Input column same height as Daisy UI has */
+        min-height: 2.5rem !important;
     }
 
 </style>
 </head>
 
 <body class="antialiased font-sans text-base">
-    {{-- Sistem Layout Drawer --}}
+    {{-- Layout Drawer --}}
     <div class="drawer">
         <input id="my-drawer-3" type="checkbox" class="drawer-toggle" /> 
         <div class="drawer-content flex flex-col min-h-screen bg-base-200">
@@ -42,7 +43,7 @@
                         
                     </a>
 
-                    {{-- Menu Desktop (Hanya Tampil di Layar Besar / lg:flex) --}}
+                    {{-- Desktop Menu --}}
                     <div class="hidden lg:flex">
                         <ul class="menu menu-horizontal px-1 gap-1 text-base">
                             <li><a href="{{ route('dashboard') }}" class="hover:bg-blue-800 hover:text-white rounded-md">Dashboard</a></li>
@@ -94,21 +95,16 @@
                                 <details class="nav-dropdown">
                                     <summary class="hover:bg-blue-800 hover:text-white rounded-md">Pengaturan</summary>
                                     <ul class="p-2 bg-base-100 text-base-content rounded-t-none shadow-lg w-52 text-base z-50">
-                                        
-                                        {{-- CEK ROLE SECARA LANGSUNG --}}
                                         @if(Auth::check() && Auth::user()->role->id === 1)
                                             <li>
-                                                {{-- Masukkan route users.index di sini --}}
                                                 <a href="{{ route('users.index') }}">Manajemen User</a>
                                             </li>
                                         @endif
                                         <li>
                                             <a href="{{ route('opd.create') }}">Manajemen OPD</a>
                                         </li>
-                                        {{-- CEK ROLE SECARA LANGSUNG --}}
                                         @if(Auth::check() && Auth::user()->role->id === 1)
                                             <li>
-                                                {{-- Masukkan route users.index di sini --}}
                                                 <a href="{{ route('users.index') }}">Ekspor & Impor Data</a>
                                             </li>
                                         @endif
@@ -121,7 +117,7 @@
                     </div>
                 </div>
 
-                {{-- Bagian Kanan: Profil User (Desktop Only) --}}
+                {{-- User Profile (Desktop Only) --}}
                 <div class="flex-none hidden lg:flex">
                     <div class="dropdown dropdown-end">
                         <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
@@ -146,7 +142,7 @@
                 </div>
             </div>
 
-            {{-- Container Konten Utama: Tempat @content dari view lain di-inject --}}
+            {{-- Main content container --}}
             <main class="flex-grow container mx-auto px-4 py-6">
                 @yield('content')
             </main>
@@ -175,7 +171,7 @@
                     </div>
                 </div>
 
-                <li><a href="#" class="text-base font-medium">Dashboard</a></li>
+                <li><a href="{{ route('dashboard') }}" class="text-base font-medium">Dashboard</a></li>
                 
                 <li>
                     <details>

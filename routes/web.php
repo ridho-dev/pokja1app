@@ -68,7 +68,10 @@ Route::middleware('auth')->group(function () {
     // Halaman Daftar Surat
     Route::get('/pages/daftar-surat', [SuratController::class, 'index'])->name('surat.index');
     Route::get('/pages/download/{id}', [SuratController::class, 'download'])->name('surat.download');
-
+    // Halaman Edit Surat
+    Route::get('/letters/{id}/edit', [SuratController::class, 'edit'])->name('surat.edit');
+    Route::put('/letters/{id}', [SuratController::class, 'update'])->name('surat.update');
+    Route::delete('/surat/{id}', [SuratController::class, 'destroy'])->name('surat.destroy');
     // Halaman Detail Surat
     Route::get('/surat/{id}', [SuratController::class, 'show'])->name('surat.show');
     Route::get('/surat/{id}/view-file', [SuratController::class, 'viewFile'])->name('surat.file');

@@ -7,9 +7,20 @@
         <div class="flex items-center justify-between mt-4 mb-2">
             <h2 class="text-2xl font-bold text-[#102C57]">{{ preg_replace('/^\d{8}_\d{6}\s/', '', $letter->file_name) }}</h2>
             
-            <button onclick="history.back()" class="btn btn-sm btn-outline border-gray-300">
-                &larr; Kembali
-            </button>
+            <div class="flex items-center gap-2">
+                {{-- Tombol Edit --}}
+                <a href="{{ route('surat.edit', $letter->id) }}" class="btn btn-sm bg-amber-500 hover:bg-amber-600 text-white border-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit Surat
+                </a>
+
+                {{-- Tombol Kembali --}}
+                <button onclick="history.back()" class="btn btn-sm btn-outline border-gray-300">
+                    &larr; Kembali
+                </button>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -17,7 +28,6 @@
                 
                 {{-- View Dokumen --}}
                 <div class="card w-full bg-base-100 shadow-sm border border-gray-200 flex-grow min-h-[650px] flex flex-col overflow-hidden">
-                    {{-- LOGIKA DOC VIEWER (Ditaruh langsung di bawah card, tanpa div tambahan) --}}
                     @php
                         $extension = strtolower(pathinfo($letter->file_path, PATHINFO_EXTENSION));
                         $fileUrl = route('surat.file', $letter->id);
@@ -96,7 +106,7 @@
                     </div>
                 </div>
 
-                {{-- Daftar OPD --}}
+                {{-- OPD List --}}
                 <div class="card w-full bg-base-100 shadow-sm border border-gray-200">
                     <div class="card-body p-5">
                         <h3 class="card-title text-base text-[#102C57] border-b pb-2 mb-2">Tujuan OPD</h3>
@@ -144,6 +154,7 @@
                     <div class="card-body p-5">
                         <h3 class="card-title text-base text-[#102C57] border-b pb-2 mb-2">Sistem</h3>
                         <div class="text-sm space-y-2 text-gray-600">
+                            {{-- Uploader Information --}}
                             <div class="flex justify-between">
                                 <span>Diunggah Oleh:</span>
                                 <span class="font-medium">{{ $letter->uploader->name ?? 'Sistem' }}</span>
@@ -152,6 +163,18 @@
                                 <span>Waktu Unggah:</span>
                                 <span class="font-medium">{{ $letter->created_at->format('d/m/Y H:i:s') }}</span>
                             </div>
+
+                            {{-- Updatet Information --}}
+                            @if($letter->updated_by)
+                            <div class="flex justify-between mt-2 pt-2 border-t border-gray-100">
+                                <span>Diupdate Oleh:</span>
+                                <span class="font-medium">{{ $letter->updater->name ?? 'Sistem' }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Waktu Update:</span>
+                                <span class="font-medium">{{ $letter->updated_at->format('d/m/Y H:i:s') }}</span>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
