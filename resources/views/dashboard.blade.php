@@ -101,8 +101,8 @@
                                         {{-- Aktivitas --}}
                                         {{ $kataKerja }} 
                                         <span class="font-medium text-gray-800">
-                                            {{ $jenisSurat }} {{ $namaWilayah}}
-                                        </span>.
+                                            {{ $jenisSurat }} {{ $namaWilayah}}.
+                                        </span>
                                         {{-- Waktu --}}
                                         <div class="text-xs text-gray-400 mt-1">
                                             {{ $log->created_at->diffForHumans() }}
@@ -120,13 +120,73 @@
 
 
             {{-- Bagian Pelaporan --}}
-            <div class="w-full">
+            <div class="w-full mb-2 mt-6">
                 <h1 class="text-[#102C57] font-bold text-2xl divider">Pelaporan</h1>
             </div>
-            <div class="card w-full bg-base-100 shadow-sm border border-gray-200">
-                <div class="card-body">
-                    <h2 class="text-2xl font-bold text-start text-[#102C57]">Selamat Datang, {{ Auth::user()->name }}</h2>
-                    <p class="text-start text-gray-600">Kelola dan pantau surat masuk dengan mudah melalui dashboard ini.</p>
+
+            {{-- Scoreboard Pelaporan --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+                <!-- Total PKS -->
+                <div class="card bg-base-100 shadow-sm border border-gray-200">
+                    <div class="card-body p-4 text-center">
+                        <h3 class="text-xs lg:text-sm font-semibold text-gray-500">Total PKS</h3>
+                        <p class="text-2xl font-bold text-[#102C57]">{{ $totalPks }}</p>
+                    </div>
+                </div>
+                
+                <!-- PKS Aktif -->
+                <div class="card bg-base-100 shadow-sm border border-gray-200">
+                    <div class="card-body p-4 text-center">
+                        <h3 class="text-xs lg:text-sm font-semibold text-gray-500">PKS Aktif</h3>
+                        <p class="text-2xl font-bold text-success">{{ $pksAktif }}</p>
+                    </div>
+                </div>
+                
+                <!-- PKS Tidak Aktif -->
+                <div class="card bg-base-100 shadow-sm border border-gray-200">
+                    <div class="card-body p-4 text-center">
+                        <h3 class="text-xs lg:text-sm font-semibold text-gray-500">PKS Tidak Aktif</h3>
+                        <p class="text-2xl font-bold text-error">{{ $pksTidakAktif }}</p>
+                    </div>
+                </div>
+                
+                <!-- Laporan Semester -->
+                <div class="card bg-base-100 shadow-sm border border-gray-200">
+                    <div class="card-body p-4 text-center">
+                        <h3 class="text-xs lg:text-sm font-semibold text-gray-500">Laporan Semester</h3>
+                        <p class="text-2xl font-bold text-[#102C57]">0</p>
+                    </div>
+                </div>
+                
+                <!-- Data Balikan -->
+                <div class="card bg-base-100 shadow-sm border border-gray-200">
+                    <div class="card-body p-4 text-center">
+                        <h3 class="text-xs lg:text-sm font-semibold text-gray-500">Data Balikan</h3>
+                        <p class="text-2xl font-bold text-[#102C57]">0</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Kolom Grafik --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- Grafik Garis -->
+                <div class="card bg-base-100 shadow-sm border border-gray-200">
+                    <div class="card-body p-5">
+                        <h3 class="text-md font-bold text-[#102C57] mb-4">Tren Pembuatan PKS</h3>
+                        <div class="w-full min-h-[300px] relative">
+                            <canvas id="pksTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grafik Treemap -->
+                <div class="card bg-base-100 shadow-sm border border-gray-200">
+                    <div class="card-body p-5">
+                        <h3 class="text-md font-bold text-[#102C57] mb-4">Distribusi PKS per Provinsi</h3>
+                        <div class="w-full min-h-[300px] relative">
+                            <div id="treemapChart" class="w-full h-full"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -332,5 +392,95 @@
         }
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('pksTrendChart').getContext('2d');
+    
+    // Menerima data dari Controller
+    const labels = @json($chartLabels);
+    const data = @json($chartData);
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels, // X (Waktu)
+            datasets: [{
+                label: 'Jumlah Dokumen PKS',
+                data: data, // Y (Jumlah)
+                borderColor: '#102C57', 
+                backgroundColor: 'rgba(16, 44, 87, 0.1)', 
+                borderWidth: 2,
+                pointBackgroundColor: '#102C57',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                fill: true, 
+                tension: 0.3 
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1 
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false 
+                }
+            }
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+        
+        // Menerima data dari Controller
+        const rawTreemapData = @json($treemapData);
+
+        const treemapOptions = {
+            series: [{
+                data: rawTreemapData
+            }],
+            legend: {
+                show: false
+            },
+            chart: {
+                height: 320,
+                type: 'treemap',
+                toolbar: {
+                    show: false
+                },
+                fontFamily: 'inherit'
+            },
+            // Variasi warna gradasi biru 
+            colors: ['#102C57', '#1A4A8E', '#2B6BCC', '#528BE8', '#8BAEEF', '#A9C6F5'],
+            plotOptions: {
+                treemap: {
+                    distributed: true, 
+                    enableShades: false
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                style: {
+                    fontSize: '12px',
+                    fontWeight: 'bold'
+                },
+                formatter: function(text, op) {
+                    // Menampilkan Nama Provinsi + Jumlah di dalam kotak
+                    return [text, op.value + ' Dokumen']
+                }
+            }
+        };
+
+        const treemapChart = new ApexCharts(document.querySelector("#treemapChart"), treemapOptions);
+        treemapChart.render();
+    });
 </script>
 @endsection

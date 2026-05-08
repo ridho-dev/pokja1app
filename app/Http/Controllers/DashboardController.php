@@ -6,6 +6,7 @@ use App\Models\ActivityLog;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -24,16 +25,55 @@ class DashboardController extends Controller
         $letters = Letter::with(['opds', 'letterType', 'uploader'])
             ->latest()
             ->paginate(10);
-
-        // $recentActivities = Letter::with(['uploader', 'opds.regency'])
-        //                       ->latest()
-        //                       ->take(5)
-        //                       ->get();
         
         $recentActivities = ActivityLog::with(['user', 'activityType', 'letterType', 'regency'])
             ->latest()
-            ->take(5) // Ambil 5 aktivitas terbaru
+            ->take(6) // Ambil (n) aktivitas terbaru
             ->get();
+
+
+        // ==========================================
+        // BAGIAN PELAPORAN
+        // ==========================================
+        $today = Carbon::today()->toDateString();
+
+        $totalPks = Letter::where('letter_type_id', 23)->count();
+
+        // Menghitung PKS Aktif & Tidak (Hari ini >= start_date DAN Hari ini <= end_date)
+        $pksAktif = Letter::where('letter_type_id', 23)
+                        ->where('start_date', '<=', $today)
+                        ->where('end_date', '>=', $today)
+                        ->count();
+        $pksTidakAktif = $totalPks - $pksAktif;
+
+        // GRAFIK GARIS
+        $chartLabels = [];
+        $chartData = [];
+
+        // Waktu 1 tahun terakhir
+        $startDate = Carbon::now()->startOfMonth()->subMonths(11);
+        
+        $pksRecords = Letter::where('letter_type_id', 23)
+            ->where('start_date', '>=', $startDate->toDateString())
+            ->selectRaw('YEAR(start_date) as year, MONTH(start_date) as month, COUNT(*) as count')
+            ->groupBy('year', 'month')
+            ->get()
+            ->keyBy(function ($item) {
+                // Format key menjadi "YYYY-MM" untuk pencocokan nanti
+                return $item->year . '-' . str_pad($item->month, 2, '0', STR_PAD_LEFT);
+            });
+
+        // Loop 12 bulan untuk memastikan bulan yang kosong (0) tetap tampil di grafik
+        for ($i = 11; $i >= 0; $i--) {
+            $date = Carbon::now()->startOfMonth()->subMonths($i);
+            $key = $date->format('Y-m'); // Format YYYY-MM
+            
+            // X : "Jun 2025", "Jul 2025"
+            $chartLabels[] = $date->translatedFormat('M Y'); 
+            
+            // Y : Jumlah
+            $chartData[] = isset($pksRecords[$key]) ? $pksRecords[$key]->count : 0;
+        }
 
         $namaJenisSurat = [
             11  => 'Surat Masuk P1',
@@ -87,6 +127,28 @@ class DashboardController extends Controller
             }
         }
 
+        // ==========================================
+        // GRAFIK TREEMAP
+        // ==========================================
+        
+        $provinceDistribution = DB::table('letters')
+            ->join('letter_opd', 'letters.id', '=', 'letter_opd.letter_id') 
+            ->join('opds', 'letter_opd.opd_id', '=', 'opds.id')
+            ->join('regencies', 'opds.regency_id', '=', 'regencies.id')
+            ->join('provinces', 'regencies.province_id', '=', 'provinces.id')
+            ->where('letters.letter_type_id', 23)
+            ->select('provinces.name as province_name', DB::raw('COUNT(DISTINCT letters.id) as total'))
+            ->groupBy('provinces.id', 'provinces.name')
+            ->get();
+
+        // Format data menjadi array {x: 'Nama', y: Jumlah}
+        $treemapData = $provinceDistribution->map(function($item) {
+            return [
+                'x' => ucwords(strtolower($item->province_name)),
+                'y' => (int) $item->total
+            ];
+        });
+
         return view('dashboard', compact(
             'labels',
             'dataTotal',
@@ -97,7 +159,13 @@ class DashboardController extends Controller
             'letters', 
             'recentActivities', 
             'namaJenisSurat',
-            'labels', 
+            'labels',
+            'totalPks', 
+            'pksAktif', 
+            'pksTidakAktif',
+            'chartLabels',
+            'chartData',
+            'treemapData'
         ));
     }
 }

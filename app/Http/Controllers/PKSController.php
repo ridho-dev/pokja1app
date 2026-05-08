@@ -29,7 +29,7 @@ class PKSController extends Controller
         $request->validate([
             'start_date'     => 'required|date',
             'end_date'     => 'required|date',
-            'file_surat'     => 'required|mimes:pdf,doc,docx,jpg,png|max:20480',
+            'file_surat'     => 'required|mimes:pdf,doc,docx,jpg,png|max:5120',
         ]);
 
         $fileData = $this->handleLetterUpload($request->file('file_surat'), $letter_type_id, $request->opd);
@@ -47,13 +47,17 @@ class PKSController extends Controller
         $letters->opds()->attach($request->opd);
 
         $logRegencyId = null;
-        if (!empty($allOpdIds)) {
-            $firstOpdId = current($allOpdIds); 
-            $firstOpd = \App\Models\Opd::find($firstOpdId);
-            if ($firstOpd) {
-                $logRegencyId = $firstOpd->regency_id; 
+        if ($request->has('opd')) {
+            // Menangani input baik yang berbentuk array maupun nilai tunggal
+            $opdId = is_array($request->opd) ? $request->opd[0] : $request->opd;
+            
+            $opd = \App\Models\Opd::find($opdId);
+            
+            if ($opd) {
+                $logRegencyId = $opd->regency_id;
             }
         }
+
 
         // ==========================================
         // SAVE USER ACTIVITY LOG

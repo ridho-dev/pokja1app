@@ -14,3 +14,6 @@ window.TomSelect = TomSelect;
 
 import Chart from 'chart.js/auto';
 window.Chart = Chart;
+
+import ApexCharts from 'apexcharts';
+window.ApexCharts = ApexCharts;
